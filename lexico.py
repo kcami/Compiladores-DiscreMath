@@ -25,7 +25,7 @@ reserved = {
    'TIPO_MATRIZ' : 'matriz_t',
    'TIPO_DOUBLE' : 'double_t',
    'TIPO_BOOLEAN' : 'boolean_t',
-   'TIPO_STRING' : 'string_t',
+   'TIPO_LITERAL' : 'literal_t',
    'TIPO_PREMISSA' : 'premissa_t'
 }
 
@@ -37,7 +37,7 @@ tokens = [
    'MULTIPLICACAO',        #*
    'DIVISAO',              #/
    'MODULO',               #%
-   'PRODUTO_CARTESIANO' ,  #x
+   'PRODUTO_CARTESIANO',   #x
 
                                                       #Operadores Lógicos
    'AND',                  #&
@@ -71,35 +71,38 @@ tokens = [
    'FINAL_DELIMITADOR_CHAVES',          #}
 
                                                       #Identificadores
-   'INT',          #inteiro
+   'INT',          #int
    'DOUBLE',       #double
-   'STRING',       #string
+   'LITERAL',      #literal
    'CHAR',         #char
    'BOOLEAN',      #boolean
+   'PREMISSA',     #premissa
+   'ARRAY',        #array
+   'MATRIZ',       #matriz
 
+                                                      #Atribuição
    'ATRIBUICAO',     #=
 
-   #para a criação dos RegEx (para verificar as compatibilidades) com o PLY,as verificações tem que ter uma "chamada" pelo token, é padrão
-   #'IGNORE',      #Ignorar tabulação e espaço
+   #Para a criação dos RegEx (para verificar as compatibilidades) com o PLY,as verificações tem que ter uma "chamada" pelo token, é padrão
+   'IGNORE',      #Ignorar tabulação e espaço
 
    'numero_mf',   #numero mal formado
-   'string_mf',   #string mal formada
+   'literal_mf',   #string mal formada
 
 ] + list(reserved.keys()) #concatenação com as palavras reservadas para verificação
 
 #Regras de expressão regular (RegEx) para tokens simples
 
 t_MAIS = r'\+'
-t_MENOS = r'-'
+t_MENOS = r'\-'
 t_MULTIPLICACAO = r'\*'
 t_DIVISAO  = r'/'
-t_MODULO = r'/%'
-t_PRODUTO_CARTESIANO = r'/x'
-
+t_MODULO = r'\%'
+t_PRODUTO_CARTESIANO = r'x'
 t_AND = r'\&'
 t_OR = r'\|'
-t_DOUBLEAND_BITWISE =  r'\&&'
-t_DOUBLEOR_BITWISE = r'\||2'
+t_DOUBLEAND_BITWISE = r'\&&'
+t_DOUBLEOR_BITWISE = r'\|\|'
 
 t_TILNOT_BITWISE = r'\~'
 t_NOT = r'\!'
@@ -124,16 +127,16 @@ t_FINAL_DELIMITADOR_CHAVES = r'\}'
 
 t_ATRIBUICAO = r'\='
 
-#t_IGNORE = ' \t' #ignora espaço e tabulação
+t_IGNORE = r'\s|\t' #ignora espaço e tabulação
 
 #Regras de expressão regular (RegEx) para tokens mais "complexos"
 
-def t_STRING(t):
-    r'("[^"]*")'
+def t_LITERAL(t):
+    r'("[^"]{2,}")'
     return add_lista_saida(t,f"Nenhum")
 
-def t_string_mf(t):
-    r'("[^"]*)'
+def t_literal_mf(t):
+    r'("[^"]{2,})'
     return add_lista_saida(t,f"String mal formada")
 
 def t_numero_mf(t):
@@ -141,9 +144,7 @@ def t_numero_mf(t):
     return add_lista_saida(t,f"Numero mal formado")
 
 def t_DOUBLE(t):
-    # r'(\d*\.\d*)|(\d+\.\d*)'
     r'(\d*\.\d*)|(\d+\.\d*)'
-    #t.value = float(t.value)
     return add_lista_saida(t,f"Nenhum")
 
 def t_INT(t):
@@ -156,12 +157,41 @@ def t_INT(t):
         t.value = int(t.value)
         return add_lista_saida(t,f"Nenhum")
 
+def t_BOOLEAN(t):
+    r'\0|1'
+    return add_lista_saida(t, f"Nenhum")
+
+def t_CHAR(t):
+    r'\"(\w|\+|\-|\*|/|\%)\"'
+    return add_lista_saida(t, f"Nenhum")
+
+def t_PREMISSA(t):
+    r'\(\w\,\w\)'
+    return add_lista_saida(t, f"Nenhum")
+
+def t_ARRAY(t):
+    r'\#'
+    #a fazer
+
+def t_MATRIZ(t):
+    r'\@'
+    #a fazer
+
 #Regra de tratamento de erros
 def t_error(t):
     saidas.append((t.lineno,t.lexpos,t.type,t.value, f'Caracter nao reconhecido por esta linguagem'))
     t.lexer.skip(1)
 
-data = '(5+3.3)'
+data = '(5+3.3&2%5)' \
+       '5.f' \
+       '>=' \
+       'x' \
+       '"x"' \
+       '"5"' \
+       '"+"' \
+       '"%"' \
+       '"ab"' \
+       '(a,b) '
 
 lexer = lex.lex()
 lexer.input(data)
