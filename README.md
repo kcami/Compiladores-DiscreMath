@@ -4,7 +4,7 @@ Construção de um analisador léxico e sintático utilizando Python Lex-Yacc (P
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install requirements.
 
 ```bash
 pip install -r requirements.txt
