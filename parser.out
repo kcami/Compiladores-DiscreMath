@@ -1,0 +1,136 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    ABRE_PARENTESES
+    AND
+    ARRAY
+    ASPAS
+    ATRIBUICAO
+    BOOLEAN
+    CHAR
+    DIFERENCA
+    DIFERENTE
+    DIVISAO
+    DOUBLE
+    DOUBLEAND_BITWISE
+    DOUBLEOR_BITWISE
+    ELSE
+    ENTRADA
+    FECHA_PARENTESES
+    IF
+    IGNORE
+    IGUAL
+    INICIA_COLCHETES
+    INT
+    INTERSECCAO
+    LITERAL
+    MAIOR
+    MAIOR_OU_IGUAL
+    MAIS
+    MATRIZ
+    MENOR
+    MENOR_OU_IGUAL
+    MENOS
+    MODULO
+    MULTIPLICACAO
+    NOT
+    OR
+    PONTO
+    PREMISSA
+    PRODUTO_CARTESIANO
+    PROJECAO
+    SAIDA
+    SELECAO
+    TERMINA_COLCHETES
+    TILNOT_BITWISE
+    TIPO_ARRAY
+    TIPO_BOOLEAN
+    TIPO_CHAR
+    TIPO_DOUBLE
+    TIPO_INT
+    TIPO_LITERAL
+    TIPO_MATRIZ
+    TIPO_PREMISSA
+    UNIAO
+    VIRGULA
+    WHILE
+    literal_mf
+    numero_mf
+
+Grammar
+
+Rule 0     S' -> statements
+Rule 1     statements -> statements statement
+Rule 2     statement -> statement
+Rule 3     statement -> INICIO COMECO_DELIMITADOR_CHAVES statements FINAL_DELIMITADOR_CHAVES FIM PONTO_E_VIRGULA
+
+Terminals, with rules where they appear
+
+ABRE_PARENTESES      : 
+AND                  : 
+ARRAY                : 
+ASPAS                : 
+ATRIBUICAO           : 
+BOOLEAN              : 
+CHAR                 : 
+COMECO_DELIMITADOR_CHAVES : 3
+DIFERENCA            : 
+DIFERENTE            : 
+DIVISAO              : 
+DOUBLE               : 
+DOUBLEAND_BITWISE    : 
+DOUBLEOR_BITWISE     : 
+ELSE                 : 
+ENTRADA              : 
+FECHA_PARENTESES     : 
+FIM                  : 3
+FINAL_DELIMITADOR_CHAVES : 3
+IF                   : 
+IGNORE               : 
+IGUAL                : 
+INICIA_COLCHETES     : 
+INICIO               : 3
+INT                  : 
+INTERSECCAO          : 
+LITERAL              : 
+MAIOR                : 
+MAIOR_OU_IGUAL       : 
+MAIS                 : 
+MATRIZ               : 
+MENOR                : 
+MENOR_OU_IGUAL       : 
+MENOS                : 
+MODULO               : 
+MULTIPLICACAO        : 
+NOT                  : 
+OR                   : 
+PONTO                : 
+PONTO_E_VIRGULA      : 3
+PREMISSA             : 
+PRODUTO_CARTESIANO   : 
+PROJECAO             : 
+SAIDA                : 
+SELECAO              : 
+TERMINA_COLCHETES    : 
+TILNOT_BITWISE       : 
+TIPO_ARRAY           : 
+TIPO_BOOLEAN         : 
+TIPO_CHAR            : 
+TIPO_DOUBLE          : 
+TIPO_INT             : 
+TIPO_LITERAL         : 
+TIPO_MATRIZ          : 
+TIPO_PREMISSA        : 
+UNIAO                : 
+VIRGULA              : 
+WHILE                : 
+error                : 
+literal_mf           : 
+numero_mf            : 
+
+Nonterminals, with rules where they appear
+
+statement            : 1 2
+statements           : 1 3 0
+

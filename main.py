@@ -1,4 +1,5 @@
 import ply.lex as lex
+from ply import yacc
 
 saidas = []
 
@@ -60,6 +61,7 @@ tokens = [
                                                       #Simbolos Especiais
    'PONTO',                   #.
    'VIRGULA',                 #,
+   'PONTO_E_VIRGULA',         #;
    'ASPAS',                   #"
    'INICIA_COLCHETES',        #[
    'TERMINA_COLCHETES',       #]
@@ -93,6 +95,27 @@ tokens = [
 
 #Regras de expressão regular (RegEx) para tokens simples
 
+t_INICIO        = r'sink'
+t_FIM           = r'source'
+t_IF		    = r'if'
+t_ELSE          = r'else'
+t_WHILE		    = r'while'
+t_INTERSECCAO   = 'rinter'
+t_UNIAO         = 'r/uni'
+t_DIFERENCA     = r'dif'
+t_SELECAO       = r'sel'
+t_PROJECAO      = r'proj'
+t_ENTRADA       = r'input'
+t_SAIDA         = r'print'
+t_TIPO_INT      = r'int_t'
+t_TIPO_CHAR     = r'char_t'
+t_TIPO_ARRAY    = r'array_t'
+t_TIPO_MATRIZ   = r'matriz_t'
+t_TIPO_DOUBLE   = r'double_t'
+t_TIPO_BOOLEAN  = r'boolean_t'
+t_TIPO_LITERAL  = r'literal_t'
+t_TIPO_PREMISSA = r'premissa_t'
+
 t_MAIS = r'\+'
 t_MENOS = r'\-'
 t_MULTIPLICACAO = r'\*'
@@ -116,6 +139,7 @@ t_DIFERENTE = r'\!\='
 
 t_VIRGULA = r'\,'
 t_PONTO = r'\.'
+t_PONTO_E_VIRGULA = r'\;'
 t_ASPAS = r'\"'
 t_ABRE_PARENTESES  = r'\('
 t_FECHA_PARENTESES  = r'\)'
@@ -178,9 +202,32 @@ def t_MATRIZ(t):
     #a fazer
 
 #Regra de tratamento de erros
+erroslexicos = []
 def t_error(t):
-    saidas.append((t.lineno,t.lexpos,t.type,t.value, f'Caracter nao reconhecido por esta linguagem'))
+    erroslexicos.append((t.lineno,t.lexpos,t.type,t.value, f'Caracter nao reconhecido por esta linguagem'))
     t.lexer.skip(1)
+
+#Análise Sintática
+
+def p_statements_multiple(p):
+    '''
+    statements : statements statement
+    '''
+
+def p_statements_single(p):
+    '''
+    statement : statement
+    '''
+
+def p_statement_source(p):
+    '''
+    statement : INICIO COMECO_DELIMITADOR_CHAVES statements FINAL_DELIMITADOR_CHAVES FIM PONTO_E_VIRGULA
+    '''
+
+errossintaticos = []
+def p_error(p):
+    errossintaticos.append(p)
+    print("ERRO: ",p)
 
 data = '(5+3.3&2%5)' \
        '5.f' \
@@ -191,7 +238,8 @@ data = '(5+3.3&2%5)' \
        '"+"' \
        '"%"' \
        '"ab"' \
-       '(a,b) '
+       '(a,b) ' \
+       'source'
 
 lexer = lex.lex()
 lexer.input(data)
@@ -199,6 +247,11 @@ lexer.input(data)
 for tok in lexer:
     print(tok)
 
-for retorno in saidas:
+for retorno in erroslexicos:
     print(retorno)
+
+#parser = yacc.yacc()
+#result = parser.parse(data)
+
+#print(result)
 
