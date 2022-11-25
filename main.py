@@ -33,8 +33,8 @@ reserved = {
 # Lista para os nomes dos tokens. Esta parte é sempre requerida pela Biblioteca PLY
 tokens = [
                                                       #Operadores Aritméticos
-   'MAIS' ,                #+
-   'MENOS' ,               #-
+   'SOMA' ,                #+
+   'SUBTRACAO' ,           #-
    'MULTIPLICACAO',        #*
    'DIVISAO',              #/
    'MODULO',               #%
@@ -81,10 +81,12 @@ tokens = [
    'PREMISSA',     #premissa
    'ARRAY',        #array
    'MATRIZ',       #matriz
-   'VARIAVEL'      #nome da variavel
+   'VARIAVEL',     #nome da variavel
 
                                                       #Atribuição
-   'ATRIBUICAO',     #=
+   'ATRIBUICAO',   #=
+   
+   'QUEBRA_LINHA', #\n
 
    #Para a criação dos RegEx (para verificar as compatibilidades) com o PLY,as verificações tem que ter uma "chamada" pelo token, é padrão
    'IGNORE',      #Ignorar tabulação e espaço
@@ -223,8 +225,7 @@ def p_valTipo(p):
     '''valTipo : TIPO_INT
                | TIPO_STRING
                | TIPO_BOOLEAN
-               | TIPO_LITERAL
-               | TIPO DOUBLE
+               | TIPO_DOUBLE
     '''
     p[0]=p[1]
 
@@ -235,7 +236,7 @@ def p_array(p):
 
 def p_matrix(p):
     '''matrix : COMECO_DELIMITADOR_CHAVES array VIRGULA array FINAL_DELIMITADOR_CHAVES
-              | CCOMECO_DELIMITADOR_CHAVES array FINAL_DELIMITADOR_CHAVES
+              | COMECO_DELIMITADOR_CHAVES array FINAL_DELIMITADOR_CHAVES
               | COMECO_DELIMITADOR_CHAVES FINAL_DELIMITADOR_CHAVES
     '''
                  #  | while_codigo
@@ -251,10 +252,10 @@ def p_conjunto(p):
     '''
 
 def p_aritmetica(p):
-    '''aritmetica: VARIAVEL opArit VARIAVEL
-                 | VARIAVEL opArit digitos
-                 | digitos opArit VARIAVEL
-                 | digitos opArit digitos
+    '''aritmetica : VARIAVEL opArit VARIAVEL
+                  | VARIAVEL opArit digitos
+                  | digitos opArit VARIAVEL
+                  | digitos opArit digitos
     '''
 
 def p_logico(p):
@@ -270,14 +271,14 @@ def p_logico(p):
     '''
     
 def p_unario(p): 
-    ''' unario: opUna VARIAVEL
-              | opUna digitos
-              | opUna relacional
-              | opUna BOOLEAN
-              | VARIAVEL
-              | digitos
-              | relacional
-              | BOOLEAN
+    ''' unario : opUna VARIAVEL
+               | opUna digitos
+               | opUna relacional
+               | opUna BOOLEAN
+               | VARIAVEL
+               | digitos
+               | relacional
+               | BOOLEAN
     '''
 
 def p_relacional(p):
@@ -300,7 +301,8 @@ def p_relacional(p):
     '''
 
 def p_digitos(p): # numeros que podemos fazer operacoes
-    '''digitos : INT | DOUBLE
+    '''digitos : INT 
+               | DOUBLE
     '''
 
 def p_opRel(p):
@@ -342,10 +344,10 @@ def p_opConj(p):
 def p_simbEsp(p):
     '''simbEsp : PONTO
                | VIRGULA
-               | ABRE-PARENTESES
-               | FECHA-PARENTESES
-               | INICIA-COLCHETES
-               | TERMINA-COLCHETES
+               | ABRE_PARENTESES
+               | FECHA_PARENTESES
+               | INICIA_COLCHETES
+               | TERMINA_COLCHETES
                | PONTO_E_VIRGULA
     '''
 
@@ -363,16 +365,12 @@ def p_type_int(p):
     '''type_int : TIPO_INT
     '''
 
-def p_type_string(p):
-    '''type_string : TIPO_STRING
-    '''
-
 def p_type_boolean(p):
     '''type_boolean : TIPO_BOOLEAN
     '''
 
-def p_type_literal(p):
-    '''type_literal : TIPO_LITERAL
+def p_type_string(p):
+    '''type_string : TIPO_STRING
     '''
 
 def p_type_double(p):
@@ -411,23 +409,21 @@ def p_lista_codigo(p):
 
 def p_main(p):
     '''
-    main: INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
+    main : INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
     '''
 
 def p_declaracao(p):
     '''declaracao : type_int VARIAVEL 
-                  |  type_string VARIAVEL
-                  |  type_boolean VARIAVEL
-                  |  type_literal VARIAVEL
-                  |  type_double VARIAVEL
+                  | type_string VARIAVEL
+                  | type_boolean VARIAVEL
+                  | type_double VARIAVEL
     '''
 
 def p_atribuicao(p):
-    '''atribuicao :  type_int VARIAVEL ATRIBUICAO INT
-                  |  type_string VARIAVEL ATRIBUICAO STRING
-                  |  type_boolean VARIAVEL ATRIBUICAO BOOLEAN
-                  |  type_literal VARIAVEL ATRIBUICAO LITERAL
-                  |  type_double VARIAVEL ATRIBUICAO DOUBLE
+    '''atribuicao : type_int VARIAVEL ATRIBUICAO INT
+                  | type_string VARIAVEL ATRIBUICAO STRING
+                  | type_boolean VARIAVEL ATRIBUICAO BOOLEAN
+                  | type_double VARIAVEL ATRIBUICAO DOUBLE
     '''
 
 def p_comparacao(p):
@@ -465,13 +461,13 @@ lexer = lex.lex()
 lexer.input(data)
 
 #Léxica
-#for tok in lexer:
-#    print(tok)
-#for retorno in saidas:
-#    print(retorno)
+for tok in lexer:
+    print(tok)
+for retorno in saidas:
+    print(retorno)
 
 #Sintática
-parser = yacc.yacc()
-result = parser.parse(data)
-print(result)
+#parser = yacc.yacc()
+#result = parser.parse(data)
+#print(result)
 

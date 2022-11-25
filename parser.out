@@ -2,145 +2,250 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    AND
-    ARRAY
     ASPAS
-    ATRIBUICAO
-    BOOLEAN
-    CHAR
-    DIFERENCA
-    DIFERENTE
-    DIVISAO
-    DOUBLE
-    DOUBLEAND_BITWISE
-    DOUBLEOR_BITWISE
-    ENTRADA
     IGNORE
-    IGUAL
-    INICIA_COLCHETES
-    INT
-    INTERSECCAO
-    LITERAL
-    MAIOR
-    MAIOR_OU_IGUAL
-    MAIS
     MATRIZ
-    MENOR
-    MENOR_OU_IGUAL
-    MENOS
-    MODULO
-    MULTIPLICACAO
-    NOT
-    OR
-    PONTO
     PREMISSA
-    PRODUTO_CARTESIANO
     PROJECAO
-    SAIDA
     SELECAO
-    TERMINA_COLCHETES
-    TILNOT_BITWISE
     TIPO_ARRAY
-    TIPO_BOOLEAN
     TIPO_CHAR
-    TIPO_DOUBLE
-    TIPO_INT
-    TIPO_LITERAL
     TIPO_MATRIZ
     TIPO_PREMISSA
-    UNIAO
-    VIRGULA
     WHILE
-    literal_mf
     numero_mf
+    string_mf
 
 Grammar
 
 Rule 0     S' -> empty
 Rule 1     empty -> <empty>
 Rule 2     end -> PONTO_E_VIRGULA
-Rule 3     statement -> if_statement
-Rule 4     list_statement -> statement list_statement
-Rule 5     list_statement -> empty
-Rule 6     statement -> INICIO COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES FIM
-Rule 7     comparacao -> <empty>
-Rule 8     if_statement -> IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES
-Rule 9     if_statement -> IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES ELSE COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES
-Rule 10    while_statement -> ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES
+Rule 3     valTipo -> TIPO_INT
+Rule 4     valTipo -> TIPO_STRING
+Rule 5     valTipo -> TIPO_BOOLEAN
+Rule 6     valTipo -> TIPO_DOUBLE
+Rule 7     array -> INICIA_COLCHETES valTipo VIRGULA valTipo TERMINA_COLCHETES
+Rule 8     array -> INICIA_COLCHETES valTipo TERMINA_COLCHETES
+Rule 9     matrix -> COMECO_DELIMITADOR_CHAVES array VIRGULA array FINAL_DELIMITADOR_CHAVES
+Rule 10    matrix -> COMECO_DELIMITADOR_CHAVES array FINAL_DELIMITADOR_CHAVES
+Rule 11    matrix -> COMECO_DELIMITADOR_CHAVES FINAL_DELIMITADOR_CHAVES
+Rule 12    conjunto -> VARIAVEL opConj VARIAVEL
+Rule 13    conjunto -> VARIAVEL opConj ARRAY
+Rule 14    conjunto -> ARRAY opConj VARIAVEL
+Rule 15    conjunto -> ARRAY opConj ARRAY
+Rule 16    aritmetica -> VARIAVEL opArit VARIAVEL
+Rule 17    aritmetica -> VARIAVEL opArit digitos
+Rule 18    aritmetica -> digitos opArit VARIAVEL
+Rule 19    aritmetica -> digitos opArit digitos
+Rule 20    logico -> VARIAVEL opLog VARIAVEL
+Rule 21    logico -> VARIAVEL opLog digitos
+Rule 22    logico -> VARIAVEL opLog relacional
+Rule 23    logico -> digitos opLog VARIAVEL
+Rule 24    logico -> digitos opLog digitos
+Rule 25    logico -> digitos opLog relacional
+Rule 26    logico -> relacional opLog VARIAVEL
+Rule 27    logico -> relacional opLog digitos
+Rule 28    logico -> relacional opLog relacional
+Rule 29    unario -> opUna VARIAVEL
+Rule 30    unario -> opUna digitos
+Rule 31    unario -> opUna relacional
+Rule 32    unario -> opUna BOOLEAN
+Rule 33    unario -> VARIAVEL
+Rule 34    unario -> digitos
+Rule 35    unario -> relacional
+Rule 36    unario -> BOOLEAN
+Rule 37    relacional -> VARIAVEL opRel VARIAVEL
+Rule 38    relacional -> VARIAVEL opRel digitos
+Rule 39    relacional -> VARIAVEL opRel STRING
+Rule 40    relacional -> VARIAVEL opRel CHAR
+Rule 41    relacional -> digitos opRel digitos
+Rule 42    relacional -> digitos opRel VARIAVEL
+Rule 43    relacional -> digitos opRel STRING
+Rule 44    relacional -> digitos opRel CHAR
+Rule 45    relacional -> STRING opRel STRING
+Rule 46    relacional -> STRING opRel VARIAVEL
+Rule 47    relacional -> STRING opRel CHAR
+Rule 48    relacional -> STRING opRel digitos
+Rule 49    relacional -> CHAR opRel VARIAVEL
+Rule 50    relacional -> CHAR opRel digitos
+Rule 51    relacional -> CHAR opRel STRING
+Rule 52    relacional -> CHAR opRel CHAR
+Rule 53    digitos -> INT
+Rule 54    digitos -> DOUBLE
+Rule 55    opRel -> IGUAL
+Rule 56    opRel -> MAIOR_OU_IGUAL
+Rule 57    opRel -> MENOR_OU_IGUAL
+Rule 58    opRel -> MAIOR
+Rule 59    opRel -> MENOR
+Rule 60    opRel -> DIFERENTE
+Rule 61    opArit -> SOMA
+Rule 62    opArit -> SUBTRACAO
+Rule 63    opArit -> MULTIPLICACAO
+Rule 64    opArit -> DIVISAO
+Rule 65    opArit -> MODULO
+Rule 66    opArit -> PRODUTO_CARTESIANO
+Rule 67    opLog -> AND
+Rule 68    opLog -> OR
+Rule 69    opLog -> DOUBLEAND_BITWISE
+Rule 70    opLog -> DOUBLEOR_BITWISE
+Rule 71    opUna -> TILNOT_BITWISE
+Rule 72    opUna -> NOT
+Rule 73    opConj -> INTERSECCAO
+Rule 74    opConj -> UNIAO
+Rule 75    opConj -> DIFERENCA
+Rule 76    simbEsp -> PONTO
+Rule 77    simbEsp -> VIRGULA
+Rule 78    simbEsp -> ABRE_PARENTESES
+Rule 79    simbEsp -> FECHA_PARENTESES
+Rule 80    simbEsp -> INICIA_COLCHETES
+Rule 81    simbEsp -> TERMINA_COLCHETES
+Rule 82    simbEsp -> PONTO_E_VIRGULA
+Rule 83    comProg -> COMECO_DELIMITADOR_CHAVES
+Rule 84    comProg -> FINAL_DELIMITADOR_CHAVES
+Rule 85    bloProg -> INICIO
+Rule 86    bloProg -> FIM
+Rule 87    type_int -> TIPO_INT
+Rule 88    type_boolean -> TIPO_BOOLEAN
+Rule 89    type_string -> TIPO_STRING
+Rule 90    type_double -> TIPO_DOUBLE
+Rule 91    entrada -> ENTRADA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
+Rule 92    saida -> SAIDA ABRE_PARENTESES STRING FECHA_PARENTESES
+Rule 93    saida -> SAIDA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
+Rule 94    saida -> SAIDA ABRE_PARENTESES QUEBRA_LINHA FECHA_PARENTESES
+Rule 95    codigo -> condicional
+Rule 96    codigo -> atribuicao end
+Rule 97    codigo -> entrada end
+Rule 98    codigo -> saida end
+Rule 99    codigo -> while
+Rule 100   lista_codigo -> codigo PONTO_E_VIRGULA
+Rule 101   lista_codigo -> empty
+Rule 102   main -> INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
+Rule 103   declaracao -> type_int VARIAVEL
+Rule 104   declaracao -> type_string VARIAVEL
+Rule 105   declaracao -> type_boolean VARIAVEL
+Rule 106   declaracao -> type_double VARIAVEL
+Rule 107   atribuicao -> type_int VARIAVEL ATRIBUICAO INT
+Rule 108   atribuicao -> type_string VARIAVEL ATRIBUICAO STRING
+Rule 109   atribuicao -> type_boolean VARIAVEL ATRIBUICAO BOOLEAN
+Rule 110   atribuicao -> type_double VARIAVEL ATRIBUICAO DOUBLE
+Rule 111   comparacao -> relacional opLog relacional
+Rule 112   comparacao -> relacional opLog logico
+Rule 113   comparacao -> relacional opLog unario
+Rule 114   comparacao -> logico opLog relacional
+Rule 115   comparacao -> logico opLog logico
+Rule 116   comparacao -> logico opLog unario
+Rule 117   comparacao -> unario opLog unario
+Rule 118   comparacao -> unario opLog relacional
+Rule 119   comparacao -> unario opLog logico
+Rule 120   comparacao -> relacional
+Rule 121   comparacao -> unario
+Rule 122   comparacao -> logico
+Rule 123   condicional -> IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
+Rule 124   condicional -> IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES ELSE COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
+Rule 125   while -> ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
 
 Terminals, with rules where they appear
 
-ABRE_PARENTESES      : 8 9 10
-AND                  : 
-ARRAY                : 
+ABRE_PARENTESES      : 78 91 92 93 94 123 124 125
+AND                  : 67
+ARRAY                : 13 14 15 15
 ASPAS                : 
-ATRIBUICAO           : 
-BOOLEAN              : 
-CHAR                 : 
-COMECO_DELIMITADOR_CHAVES : 6 8 9 9 10
-DIFERENCA            : 
-DIFERENTE            : 
-DIVISAO              : 
-DOUBLE               : 
-DOUBLEAND_BITWISE    : 
-DOUBLEOR_BITWISE     : 
-ELSE                 : 9
-ENTRADA              : 
-FECHA_PARENTESES     : 8 9 10
-FIM                  : 6
-FINAL_DELIMITADOR_CHAVES : 6 8 9 9 10
-IF                   : 8 9
+ATRIBUICAO           : 107 108 109 110
+BOOLEAN              : 32 36 109
+CHAR                 : 40 44 47 49 50 51 52 52
+COMECO_DELIMITADOR_CHAVES : 9 10 11 83 102 123 124 124 125
+DIFERENCA            : 75
+DIFERENTE            : 60
+DIVISAO              : 64
+DOUBLE               : 54 110
+DOUBLEAND_BITWISE    : 69
+DOUBLEOR_BITWISE     : 70
+ELSE                 : 124
+ENTRADA              : 91
+FECHA_PARENTESES     : 79 91 92 93 94 123 124 125
+FIM                  : 86 102
+FINAL_DELIMITADOR_CHAVES : 9 10 11 84 102 123 124 124 125
+IF                   : 123 124
 IGNORE               : 
-IGUAL                : 
-INICIA_COLCHETES     : 
-INICIO               : 6
-INT                  : 
-INTERSECCAO          : 
-LITERAL              : 
-MAIOR                : 
-MAIOR_OU_IGUAL       : 
-MAIS                 : 
+IGUAL                : 55
+INICIA_COLCHETES     : 7 8 80
+INICIO               : 85 102
+INT                  : 53 107
+INTERSECCAO          : 73
+MAIOR                : 58
+MAIOR_OU_IGUAL       : 56
 MATRIZ               : 
-MENOR                : 
-MENOR_OU_IGUAL       : 
-MENOS                : 
-MODULO               : 
-MULTIPLICACAO        : 
-NOT                  : 
-OR                   : 
-PONTO                : 
-PONTO_E_VIRGULA      : 2
+MENOR                : 59
+MENOR_OU_IGUAL       : 57
+MODULO               : 65
+MULTIPLICACAO        : 63
+NOT                  : 72
+OR                   : 68
+PONTO                : 76
+PONTO_E_VIRGULA      : 2 82 100
 PREMISSA             : 
-PRODUTO_CARTESIANO   : 
+PRODUTO_CARTESIANO   : 66
 PROJECAO             : 
-SAIDA                : 
+QUEBRA_LINHA         : 94
+SAIDA                : 92 93 94
 SELECAO              : 
-TERMINA_COLCHETES    : 
-TILNOT_BITWISE       : 
+SOMA                 : 61
+STRING               : 39 43 45 45 46 47 48 51 92 108
+SUBTRACAO            : 62
+TERMINA_COLCHETES    : 7 8 81
+TILNOT_BITWISE       : 71
 TIPO_ARRAY           : 
-TIPO_BOOLEAN         : 
+TIPO_BOOLEAN         : 5 88
 TIPO_CHAR            : 
-TIPO_DOUBLE          : 
-TIPO_INT             : 
-TIPO_LITERAL         : 
+TIPO_DOUBLE          : 6 90
+TIPO_INT             : 3 87
 TIPO_MATRIZ          : 
 TIPO_PREMISSA        : 
-UNIAO                : 
-VIRGULA              : 
+TIPO_STRING          : 4 89
+UNIAO                : 74
+VARIAVEL             : 12 12 13 14 16 16 17 18 20 20 21 22 23 26 29 33 37 37 38 39 40 42 46 49 91 93 103 104 105 106 107 108 109 110
+VIRGULA              : 7 9 77
 WHILE                : 
 error                : 
-literal_mf           : 
 numero_mf            : 
+string_mf            : 
 
 Nonterminals, with rules where they appear
 
-comparacao           : 8 9 10
-empty                : 5 0
-end                  : 
-if_statement         : 3
-list_statement       : 4 6 8 9 9 10
-statement            : 4
-while_statement      : 
+aritmetica           : 
+array                : 9 9 10
+atribuicao           : 96
+bloProg              : 
+codigo               : 100
+comProg              : 
+comparacao           : 123 124 125
+condicional          : 95
+conjunto             : 
+declaracao           : 
+digitos              : 17 18 19 19 21 23 24 24 25 27 30 34 38 41 41 42 43 44 48 50
+empty                : 101 0
+end                  : 96 97 98
+entrada              : 97
+lista_codigo         : 102 123 124 124 125
+logico               : 112 114 115 115 116 119 122
+main                 : 
+matrix               : 
+opArit               : 16 17 18 19
+opConj               : 12 13 14 15
+opLog                : 20 21 22 23 24 25 26 27 28 111 112 113 114 115 116 117 118 119
+opRel                : 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52
+opUna                : 29 30 31 32
+relacional           : 22 25 26 27 28 28 31 35 111 111 112 113 114 118 120
+saida                : 98
+simbEsp              : 
+type_boolean         : 105 109
+type_double          : 106 110
+type_int             : 103 107
+type_string          : 104 108
+unario               : 113 116 117 117 118 119 121
+valTipo              : 7 7 8
+while                : 99
 
 Parsing method: LALR
 
