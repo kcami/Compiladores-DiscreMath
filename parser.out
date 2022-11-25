@@ -2,7 +2,6 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    ABRE_PARENTESES
     AND
     ARRAY
     ASPAS
@@ -15,10 +14,7 @@ Unused terminals:
     DOUBLE
     DOUBLEAND_BITWISE
     DOUBLEOR_BITWISE
-    ELSE
     ENTRADA
-    FECHA_PARENTESES
-    IF
     IGNORE
     IGUAL
     INICIA_COLCHETES
@@ -60,37 +56,44 @@ Unused terminals:
 
 Grammar
 
-Rule 0     S' -> statements
-Rule 1     statements -> statements statement
-Rule 2     statement -> statement
-Rule 3     statement -> INICIO COMECO_DELIMITADOR_CHAVES statements FINAL_DELIMITADOR_CHAVES FIM PONTO_E_VIRGULA
+Rule 0     S' -> empty
+Rule 1     empty -> <empty>
+Rule 2     end -> PONTO_E_VIRGULA
+Rule 3     statement -> if_statement
+Rule 4     list_statement -> statement list_statement
+Rule 5     list_statement -> empty
+Rule 6     statement -> INICIO COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES FIM
+Rule 7     comparacao -> <empty>
+Rule 8     if_statement -> IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES
+Rule 9     if_statement -> IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES ELSE COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES
+Rule 10    while_statement -> ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES list_statement FINAL_DELIMITADOR_CHAVES
 
 Terminals, with rules where they appear
 
-ABRE_PARENTESES      : 
+ABRE_PARENTESES      : 8 9 10
 AND                  : 
 ARRAY                : 
 ASPAS                : 
 ATRIBUICAO           : 
 BOOLEAN              : 
 CHAR                 : 
-COMECO_DELIMITADOR_CHAVES : 3
+COMECO_DELIMITADOR_CHAVES : 6 8 9 9 10
 DIFERENCA            : 
 DIFERENTE            : 
 DIVISAO              : 
 DOUBLE               : 
 DOUBLEAND_BITWISE    : 
 DOUBLEOR_BITWISE     : 
-ELSE                 : 
+ELSE                 : 9
 ENTRADA              : 
-FECHA_PARENTESES     : 
-FIM                  : 3
-FINAL_DELIMITADOR_CHAVES : 3
-IF                   : 
+FECHA_PARENTESES     : 8 9 10
+FIM                  : 6
+FINAL_DELIMITADOR_CHAVES : 6 8 9 9 10
+IF                   : 8 9
 IGNORE               : 
 IGUAL                : 
 INICIA_COLCHETES     : 
-INICIO               : 3
+INICIO               : 6
 INT                  : 
 INTERSECCAO          : 
 LITERAL              : 
@@ -106,7 +109,7 @@ MULTIPLICACAO        :
 NOT                  : 
 OR                   : 
 PONTO                : 
-PONTO_E_VIRGULA      : 3
+PONTO_E_VIRGULA      : 2
 PREMISSA             : 
 PRODUTO_CARTESIANO   : 
 PROJECAO             : 
@@ -131,6 +134,27 @@ numero_mf            :
 
 Nonterminals, with rules where they appear
 
-statement            : 1 2
-statements           : 1 3 0
+comparacao           : 8 9 10
+empty                : 5 0
+end                  : 
+if_statement         : 3
+list_statement       : 4 6 8 9 9 10
+statement            : 4
+while_statement      : 
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . empty
+    (1) empty -> .
+
+    $end            reduce using rule 1 (empty -> .)
+
+    empty                          shift and go to state 1
+
+state 1
+
+    (0) S' -> empty .
+
 
