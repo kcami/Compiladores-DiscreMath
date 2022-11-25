@@ -238,6 +238,10 @@ def p_matrix(p):
               | CCOMECO_DELIMITADOR_CHAVES array FINAL_DELIMITADOR_CHAVES
               | COMECO_DELIMITADOR_CHAVES FINAL_DELIMITADOR_CHAVES
     '''
+                 #  | while_codigo
+                 #  | atribuicao end
+                 #  | entrada end
+                 #  | saida end
 
 def p_conjunto(p):
     '''conjunto : VARIAVEL opConj VARIAVEL
