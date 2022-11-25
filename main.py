@@ -26,7 +26,7 @@ reserved = {
    'TIPO_MATRIZ' : 'matriz_t',
    'TIPO_DOUBLE' : 'double_t',
    'TIPO_BOOLEAN' : 'boolean_t',
-   'TIPO_LITERAL' : 'literal_t',
+   'TIPO_STRING' : 'string_t',
    'TIPO_PREMISSA' : 'premissa_t'
 }
 
@@ -75,12 +75,13 @@ tokens = [
                                                       #Identificadores
    'INT',          #int
    'DOUBLE',       #double
-   'LITERAL',      #literal
+   'STRING',       #string
    'CHAR',         #char
    'BOOLEAN',      #boolean
    'PREMISSA',     #premissa
    'ARRAY',        #array
    'MATRIZ',       #matriz
+   'VARIAVEL'      #nome da variavel
 
                                                       #Atribuição
    'ATRIBUICAO',     #=
@@ -89,19 +90,19 @@ tokens = [
    'IGNORE',      #Ignorar tabulação e espaço
 
    'numero_mf',   #numero mal formado
-   'literal_mf',   #string mal formada
+   'string_mf',   #string mal formada
 
 ] + list(reserved.keys()) #concatenação com as palavras reservadas para verificação
 
 #Regras de expressão regular (RegEx) para tokens simples
 
-t_INICIO        = r'sink'
-t_FIM           = r'source'
-t_IF		    = r'if'
+t_INICIO        = r'source'
+t_FIM           = r'sink'
+t_IF            = r'if'
 t_ELSE          = r'else'
-t_WHILE		    = r'while'
-t_INTERSECCAO   = 'rinter'
-t_UNIAO         = 'r/uni'
+t_WHILE         = r'while'
+t_INTERSECCAO   = r'inter'
+t_UNIAO         = r'uni'
 t_DIFERENCA     = r'dif'
 t_SELECAO       = r'sel'
 t_PROJECAO      = r'proj'
@@ -113,11 +114,11 @@ t_TIPO_ARRAY    = r'array_t'
 t_TIPO_MATRIZ   = r'matriz_t'
 t_TIPO_DOUBLE   = r'double_t'
 t_TIPO_BOOLEAN  = r'boolean_t'
-t_TIPO_LITERAL  = r'literal_t'
+t_TIPO_STRING   = r'string_t'
 t_TIPO_PREMISSA = r'premissa_t'
 
-t_MAIS = r'\+'
-t_MENOS = r'\-'
+t_SOMA = r'\+'
+t_SUBTRACAO = r'\-'
 t_MULTIPLICACAO = r'\*'
 t_DIVISAO  = r'/'
 t_MODULO = r'\%'
@@ -155,11 +156,11 @@ t_IGNORE = r'\s|\t' #ignora espaço e tabulação
 
 #Regras de expressão regular (RegEx) para tokens mais "complexos"
 
-def t_LITERAL(t):
+def t_STRING(t):
     r'("[^"]{2,}")'
     return add_lista_saida(t,f"Nenhum")
 
-def t_literal_mf(t):
+def t_string_mf(t):
     r'("[^"]{2,})'
     return add_lista_saida(t,f"String mal formada")
 
@@ -193,13 +194,14 @@ def t_PREMISSA(t):
     r'\(\w\,\w\)'
     return add_lista_saida(t, f"Nenhum")
 
-def t_ARRAY(t):
-    r'\#'
-    #a fazer
+def t_VARIAVEL(t):
+    r'[a-zA-Z](\w)*'
+    return add_lista_saida(t, f"Nenhum")
 
-def t_MATRIZ(t):
-    r'\@'
-    #a fazer
+#Regra para quebra de linhas
+def t_QUEBRA_LINHA(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
 
 #Regra de tratamento de erros
 erroslexicos = []
@@ -209,19 +211,243 @@ def t_error(t):
 
 #Análise Sintática
 
-def p_statements_multiple(p):
+def p_empty(p):
+    'empty :'
+    pass
+
+def p_fim_de_instrucao(p):
+    'end : PONTO_E_VIRGULA'
+    p[0]=p[1]
+
+def p_valTipo(p):
+    '''valTipo : TIPO_INT
+               | TIPO_STRING
+               | TIPO_BOOLEAN
+               | TIPO_LITERAL
+               | TIPO DOUBLE
     '''
-    statements : statements statement
+    p[0]=p[1]
+
+def p_array(p):
+    '''array : INICIA_COLCHETES valTipo VIRGULA valTipo TERMINA_COLCHETES
+             | INICIA_COLCHETES valTipo TERMINA_COLCHETES
     '''
 
-def p_statements_single(p):
-    '''
-    statement : statement
+def p_matrix(p):
+    '''matrix : COMECO_DELIMITADOR_CHAVES array VIRGULA array FINAL_DELIMITADOR_CHAVES
+              | CCOMECO_DELIMITADOR_CHAVES array FINAL_DELIMITADOR_CHAVES
+              | COMECO_DELIMITADOR_CHAVES FINAL_DELIMITADOR_CHAVES
     '''
 
-def p_statement_source(p):
+def p_conjunto(p):
+    '''conjunto : VARIAVEL opConj VARIAVEL
+                | VARIAVEL opConj ARRAY
+                | ARRAY opConj VARIAVEL
+                | ARRAY opConj ARRAY
     '''
-    statement : INICIO COMECO_DELIMITADOR_CHAVES statements FINAL_DELIMITADOR_CHAVES FIM PONTO_E_VIRGULA
+
+def p_aritmetica(p):
+    '''aritmetica: VARIAVEL opArit VARIAVEL
+                 | VARIAVEL opArit digitos
+                 | digitos opArit VARIAVEL
+                 | digitos opArit digitos
+    '''
+
+def p_logico(p):
+    '''logico : VARIAVEL opLog VARIAVEL
+              | VARIAVEL opLog digitos
+              | VARIAVEL opLog relacional
+              | digitos opLog VARIAVEL
+              | digitos opLog digitos
+              | digitos opLog relacional
+              | relacional opLog VARIAVEL
+              | relacional opLog digitos
+              | relacional opLog relacional
+    '''
+    
+def p_unario(p): 
+    ''' unario: opUna VARIAVEL
+              | opUna digitos
+              | opUna relacional
+              | opUna BOOLEAN
+              | VARIAVEL
+              | digitos
+              | relacional
+              | BOOLEAN
+    '''
+
+def p_relacional(p):
+    '''relacional : VARIAVEL opRel VARIAVEL
+                  | VARIAVEL opRel digitos
+                  | VARIAVEL opRel STRING
+                  | VARIAVEL opRel CHAR
+                  | digitos opRel digitos
+                  | digitos opRel VARIAVEL
+                  | digitos opRel STRING
+                  | digitos opRel CHAR
+                  | STRING opRel STRING
+                  | STRING opRel VARIAVEL
+                  | STRING opRel CHAR
+                  | STRING opRel digitos
+                  | CHAR opRel VARIAVEL
+                  | CHAR opRel digitos
+                  | CHAR opRel STRING
+                  | CHAR opRel CHAR
+    '''
+
+def p_digitos(p): # numeros que podemos fazer operacoes
+    '''digitos : INT | DOUBLE
+    '''
+
+def p_opRel(p):
+    '''opRel : IGUAL 
+             | MAIOR_OU_IGUAL
+             | MENOR_OU_IGUAL
+             | MAIOR
+             | MENOR
+             | DIFERENTE
+    '''      
+
+def p_opArit(p):
+    '''opArit : SOMA 
+             | SUBTRACAO
+             | MULTIPLICACAO
+             | DIVISAO
+             | MODULO
+             | PRODUTO_CARTESIANO
+    '''
+
+def p_opLog(p):
+    '''opLog : AND 
+             | OR
+             | DOUBLEAND_BITWISE
+             | DOUBLEOR_BITWISE
+    '''
+
+def p_opUna(p):
+    '''opUna : TILNOT_BITWISE 
+             | NOT
+    '''
+
+def p_opConj(p):
+    '''opConj : INTERSECCAO 
+              | UNIAO
+              | DIFERENCA
+    '''
+
+def p_simbEsp(p):
+    '''simbEsp : PONTO
+               | VIRGULA
+               | ABRE-PARENTESES
+               | FECHA-PARENTESES
+               | INICIA-COLCHETES
+               | TERMINA-COLCHETES
+               | PONTO_E_VIRGULA
+    '''
+
+def p_comProg(p):
+    '''comProg : COMECO_DELIMITADOR_CHAVES
+               | FINAL_DELIMITADOR_CHAVES
+    '''
+
+def p_bloProg(p):
+    '''bloProg : INICIO
+               | FIM
+    '''
+
+def p_type_int(p):
+    '''type_int : TIPO_INT
+    '''
+
+def p_type_string(p):
+    '''type_string : TIPO_STRING
+    '''
+
+def p_type_boolean(p):
+    '''type_boolean : TIPO_BOOLEAN
+    '''
+
+def p_type_literal(p):
+    '''type_literal : TIPO_LITERAL
+    '''
+
+def p_type_double(p):
+    '''type_double : TIPO_DOUBLE
+    '''
+
+def p_entrada(p):
+    '''entrada : ENTRADA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
+    '''
+
+def p_saida(p):
+    '''saida : SAIDA ABRE_PARENTESES STRING FECHA_PARENTESES
+             | SAIDA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
+             | SAIDA ABRE_PARENTESES QUEBRA_LINHA FECHA_PARENTESES
+    '''
+    if t[1].isdigit(): #valor da string
+        print(t[1])
+    elif t[1] == '\n': #quebra linha
+        print('\n')
+    else:              #nome da variavel
+        print(t[1].value) #???
+
+def p_codigo(p):
+    '''codigo   : condicional
+                | atribuicao end
+                | entrada end
+                | saida end
+                | while
+    '''
+
+def p_lista_codigo(p):
+    #lista_codigo
+    '''lista_codigo : codigo PONTO_E_VIRGULA
+                    | empty
+    '''
+
+def p_main(p):
+    '''
+    main: INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
+    '''
+
+def p_declaracao(p):
+    '''declaracao : type_int VARIAVEL 
+                  |  type_string VARIAVEL
+                  |  type_boolean VARIAVEL
+                  |  type_literal VARIAVEL
+                  |  type_double VARIAVEL
+    '''
+
+def p_atribuicao(p):
+    '''atribuicao :  type_int VARIAVEL ATRIBUICAO INT
+                  |  type_string VARIAVEL ATRIBUICAO STRING
+                  |  type_boolean VARIAVEL ATRIBUICAO BOOLEAN
+                  |  type_literal VARIAVEL ATRIBUICAO LITERAL
+                  |  type_double VARIAVEL ATRIBUICAO DOUBLE
+    '''
+
+def p_comparacao(p):
+    '''comparacao : relacional opLog relacional
+                  | relacional opLog logico
+                  | relacional opLog unario
+                  | logico opLog relacional
+                  | logico opLog logico
+                  | logico opLog unario
+                  | unario opLog unario
+                  | unario opLog relacional
+                  | unario opLog logico
+                  | relacional
+                  | unario
+                  | logico
+    '''
+
+def p_condicional(p):
+    '''condicional : IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
+                   | IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES ELSE COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
+    '''
+
+def p_while(p):
+    '''while : ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
     '''
 
 errossintaticos = []
@@ -229,29 +455,19 @@ def p_error(p):
     errossintaticos.append(p)
     print("ERRO: ",p)
 
-data = '(5+3.3&2%5)' \
-       '5.f' \
-       '>=' \
-       'x' \
-       '"x"' \
-       '"5"' \
-       '"+"' \
-       '"%"' \
-       '"ab"' \
-       '(a,b) ' \
-       'source'
+data = 'source{}sink'
 
 lexer = lex.lex()
 lexer.input(data)
 
-for tok in lexer:
-    print(tok)
+#Léxica
+#for tok in lexer:
+#    print(tok)
+#for retorno in saidas:
+#    print(retorno)
 
-for retorno in erroslexicos:
-    print(retorno)
-
-#parser = yacc.yacc()
-#result = parser.parse(data)
-
-#print(result)
+#Sintática
+parser = yacc.yacc()
+result = parser.parse(data)
+print(result)
 
