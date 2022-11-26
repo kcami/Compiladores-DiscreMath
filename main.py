@@ -23,7 +23,7 @@ reserved = {
    'TIPO_INT' : 'int_t',
    'TIPO_CHAR' : 'char_t',
    'TIPO_ARRAY' : 'array_t',
-   'TIPO_MATRIZ' : 'matriz_t',
+   'TIPO_MATRIX' : 'matrix_t',
    'TIPO_DOUBLE' : 'double_t',
    'TIPO_BOOLEAN' : 'boolean_t',
    'TIPO_STRING' : 'string_t',
@@ -80,7 +80,7 @@ tokens = [
    'BOOLEAN',      #boolean
    'PREMISSA',     #premissa
    'ARRAY',        #array
-   'MATRIZ',       #matriz
+   'MATRIX',       #matrix
    'VARIAVEL',     #nome da variavel
 
                                                       #Atribuição
@@ -222,36 +222,45 @@ def p_fim_de_instrucao(p):
     p[0]=p[1]
 
 def p_valTipo(p):
-    '''valTipo : TIPO_INT
-               | TIPO_STRING
-               | TIPO_BOOLEAN
-               | TIPO_DOUBLE
+    '''valTipo : INT
+               | STRING
+               | BOOLEAN
+               | DOUBLE
     '''
     p[0]=p[1]
 
 def p_array(p):
     '''array : INICIA_COLCHETES valTipo VIRGULA valTipo TERMINA_COLCHETES
              | INICIA_COLCHETES valTipo TERMINA_COLCHETES
+             | INICIA_COLCHETES TERMINA_COLCHETES
     '''
+    if(len(p)>=2):
+        p[0]=[p[2], p[4]]
+    elif(len(p)==1):
+        p[0]=[p[2]]
+    else:
+        p[0]=[]
 
 def p_matrix(p):
     '''matrix : COMECO_DELIMITADOR_CHAVES array VIRGULA array FINAL_DELIMITADOR_CHAVES
               | COMECO_DELIMITADOR_CHAVES array FINAL_DELIMITADOR_CHAVES
               | COMECO_DELIMITADOR_CHAVES FINAL_DELIMITADOR_CHAVES
     '''
-                 #  | while_codigo
-                 #  | atribuicao end
-                 #  | entrada end
-                 #  | saida end
+    if(len(p)>=2):
+        p[0]={p[2],p[4]}
+    elif(len(p)==1):
+        p[0]={p[2]}
+    else:
+        p[0]={}
 
-def p_conjunto(p):
+def p_conjunto(t):
     '''conjunto : VARIAVEL opConj VARIAVEL
-                | VARIAVEL opConj ARRAY
-                | ARRAY opConj VARIAVEL
-                | ARRAY opConj ARRAY
+                | VARIAVEL opConj array
+                | array opConj VARIAVEL
+                | array opConj array
     '''
 
-def p_aritmetica(p):
+def p_aritmetica(t):
     '''aritmetica : VARIAVEL opArit VARIAVEL
                   | VARIAVEL opArit digitos
                   | digitos opArit VARIAVEL
@@ -398,6 +407,8 @@ def p_codigo(p):
                 | atribuicao end
                 | entrada end
                 | saida end
+                | declaracao end
+                | conjunto end
                 | while
     '''
 
