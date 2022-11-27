@@ -1,4 +1,5 @@
 import ply.lex as lex
+import ast
 from ply import yacc
 from declarations import *
 
@@ -14,6 +15,8 @@ reserved = {
    'if' : 'IF',
    'else' : 'ELSE',
    'while' : 'WHILE',
+   'False:':  'FALSE',
+   'True' : 'TRUE',
    'inter' : 'INTERSECCAO',
    'uni' : 'UNIAO',
    'dif' : 'DIFERENCA',
@@ -77,8 +80,8 @@ tokens = [
    'INT',          #int
    'DOUBLE',       #double
    'STRING',       #string
-   'CHAR',         #char
    'BOOLEAN',      #boolean
+   'CHAR',         #char
    'PREMISSA',     #premissa
    'ARRAY',        #array
    'MATRIX',       #matrix
@@ -160,12 +163,13 @@ t_IGNORE = r' \t' #ignora espaço e tabulação
 
 def t_STRING(t):
     r'("[^"]{2,}")'
-    add_lista_saida(t,f"Nenhum")
+    if t.value in reserved: #Check for reserved words
+        t.type = reserved[t.value]
+    add_lista_saida(t,f"String mal formada")
     return t
 
 def t_string_mf(t):
     r'("[^"]{2,})'
-    add_lista_saida(t,f"String mal formada")
     return t
 
 def t_numero_mf(t):
@@ -178,13 +182,20 @@ def t_variavel_mf(t):
     add_lista_saida(t,f"Variavel mal formada")
     return t
 
+def t_BOOLEAN(t):
+    r'(True)|(False)'
+    t.value = bool(t.value)
+    add_lista_saida(t,f"Nenhum")
+    return t;
+
 def t_DOUBLE(t):
-    r'(\d*\.\d*)|(\d+\.\d*)'
+    r'[+-]?(\d*\.\d*)|(\d+\.\d*)'
+    t.value = float(t.value)
     add_lista_saida(t,f"Nenhum")
     return t
 
 def t_INT(t):
-    r'\d+'
+    r'[+-]?\d+'
     max = (len(t.value))
     if (max > 15):
         add_lista_saida(t,f"Tamanho do Numero maior que o suportado")
@@ -192,11 +203,6 @@ def t_INT(t):
     else:
         t.value = int(t.value)
         add_lista_saida(t,f"Nenhum")
-    return t
-
-def t_BOOLEAN(t):
-    r'\0|1'
-    add_lista_saida(t, f"Nenhum")
     return t
 
 def t_CHAR(t):
@@ -226,6 +232,15 @@ def t_QUEBRA_LINHA(t):
     t.lexer.lineno += len(t.value)
     return t
 
+precedence = (
+    ('left','ABRE_PARENTESES','FECHA_PARENTESES'),
+    ('left','AND','OR'),
+    ('left','MAIOR','MENOR', 'MAIOR_OU_IGUAL', 'MENOR_OU_IGUAL', 'IGUAL_IGUAL', 'DIFERENTE'),
+    ('left','SOMA','SUBTRACAO'),
+    ('left','MULTIPLICACAO','DIVISAO'),
+    ('right', 'UMINUS', 'TILNOT_BITWISE', 'NOT'),
+)
+
 #Regra de tratamento de erros
 erroslexicos = []
 def t_error(t):
@@ -247,9 +262,9 @@ def p_valTipo(p):
     '''valTipo : INT
                | STRING
                | BOOLEAN
-               | DOUBLE
                | CHAR
-    '''
+               | DOUBLE
+    ''' 
     p[0] = p[1]
     
 def p_lista_array(p):
@@ -355,8 +370,8 @@ def p_opArit(p):
               | MULTIPLICACAO
               | DIVISAO
               | MODULO
-              | PRODUTO_CARTESIANO
     '''
+    p[0] = p[1]
 
 def p_opLog(p):
     '''opLog : AND 
@@ -374,6 +389,7 @@ def p_opConj(p):
     '''opConj : INTERSECCAO 
               | UNIAO
               | DIFERENCA
+              | PRODUTO_CARTESIANO
     '''
 
 def p_simbEsp(p):
@@ -402,12 +418,19 @@ def p_types(p):
             | TIPO_STRING
             | TIPO_CHAR
             | TIPO_BOOLEAN
-            | TIPO_PREMISSA
     '''
+    p[0] = p[1]
 
-def p_entrada(p):
+def p_entrada(t):
     '''entrada : ENTRADA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
     '''
+    if(verify(t[3]) != None):
+        tmp = input()
+        try:
+            tmp = ast.literal_eval(tmp)
+        except:
+            pass
+        change(t[3], tmp)
 
 def p_saida_string(t):
     '''saida_string : SAIDA ABRE_PARENTESES STRING FECHA_PARENTESES
@@ -425,9 +448,12 @@ def p_saida(t):
     '''
     tmp = t[3]
     if verify(tmp) != None:
-        print(verify(tmp))
-    #else:
-    #    p_error(t[3])
+        try:
+            print(verify(tmp).replace('"',''))
+        except:
+            print(verify(tmp))
+    else:
+        raise Exception("(!) Variavel " + str(variable) + " nao existe")
 
 def p_codigo(p):
    '''codigo    : condicional
@@ -444,25 +470,86 @@ def p_lista_codigo(p):
     '''lista_codigo : codigo lista_codigo
                     | empty
     '''
-
+    
 def p_main(p):
-    '''
-    main : INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
+    '''main : INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
     '''
 
 def p_declaracao(p):
     '''declaracao : type VARIAVEL
     '''
-    p[0] = add(p[2])
+    p[0] = add(p[1], p[2])
 
+def p_expression_parenthesis(p):
+    'expression : ABRE_PARENTESES expression FECHA_PARENTESES'
+    p[0] = p[2]
+
+def p_expression_uminus(p):
+    '''expression : SUBTRACAO expression %prec UMINUS
+    '''
+    p[0] = -p[2]
+
+def p_expressao(p):
+    '''expression : valTipo
+                  | VARIAVEL
+    '''
+    p[0] = p[1]
+
+def p_binary_operators(p):
+    '''expression : expression opArit expression
+    '''
+    try: 
+        try:
+            tmp1 = verify_for_operation(p[1])
+            vl1 = names[p[1]][1]
+        except:
+            tmp1 = type(p[1])
+            vl1 = p[1]
+        try:
+            tmp2 = verify_for_operation(p[3])
+            vl2 = names[p[3]][1]
+        except:
+            tmp2 = type(p[3])
+            vl2 = p[3]
+        if(tmp1 != tmp2):
+            raise Exception ("(!) Operacao com tipos distintos")
+        else:
+            if p[2] == '+':
+                p[0] = vl1 + vl2
+            elif p[2] == '-':
+                p[0] = vl1 - vl2
+            elif p[2] == '*':
+                p[0] = vl1 * vl2
+            elif p[2] == '/':
+                p[0] = vl1 / vl2
+            else:
+                raise Exception("(!) Sinal invalido")
+    except:
+        if(type(p[1]) != type(p[3])):
+                raise Exception ("(!) Operacao com tipos distintos")
+        else:
+            if p[2] == '+':
+                p[0] = p[1] + p[3]
+            elif p[2] == '-':
+                p[0] = p[1] - p[3]
+            elif p[2] == '*':
+                p[0] = p[1] * p[3]
+            elif p[2] == '/':
+                p[0] = p[1] / p[3]
+            else:
+                raise Exception("(!) Sinal invalido")
 
 def p_atribuicao(p):
-    '''atribuicao : VARIAVEL IGUAL valTipo
-    '''
-    p[0] = change(p[1],p[3])
-    #falta fazer verificacao de tipo em declarations
+    '''atribuicao : VARIAVEL IGUAL expression
+                  | VARIAVEL IGUAL valTipo
+    '''           
+    p[0] = change(p[1], p[3])
 
 def p_comparacao(p):
+    '''comparacao : ABRE_PARENTESES comparacao FECHA_PARENTESES
+    '''
+
+def p_comparacao_relacional(p):
     '''comparacao : relacional opLog relacional
                   | relacional opLog logico
                   | relacional opLog unario
@@ -477,10 +564,15 @@ def p_comparacao(p):
                   | logico
     '''
 
-def p_condicional(p):
+def p_condicional(t):
     '''condicional : IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
                    | IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES ELSE COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
     '''
+    if(t[3]):
+        t[0] = t[6]
+    else:
+        if(len(t) > 8): #with else
+            t[0] = t[10]
 
 def p_while(p):
     '''while : ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
@@ -492,19 +584,15 @@ def p_error(p):
         errossintaticos.append(p)
         print("ERRO: ",p)
 
-data = '''
-       source { 
-            int_t c;
-            c = 5;
-            print(c);
-            print("ab");
-            print(\\n);
-        }sink
-       '''
+data = open('entrada.txt', 'r')
 #\\n é o quebra linha pq o primeiro \ é pra dizer que o próximo \ tem q ser considera hahHAHAhahaha
 
+text = ""
+for linha in data:
+    text += linha
+
 lexer = lex.lex()
-lexer.input(data)
+lexer.input(text)
 
 #Léxica
 
@@ -514,7 +602,7 @@ for tok in lexer:
 #Sintática
 
 parser = yacc.yacc(start = 'main')
-result = parser.parse(data)
+result = parser.parse(text)
 print("\nResult: " + str(result))
 
 

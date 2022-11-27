@@ -1,0 +1,7 @@
+source { 
+    int_t d;
+    int_t a;
+    boolean_t c;
+    c = True;
+    print(c);
+}sink

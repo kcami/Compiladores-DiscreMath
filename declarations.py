@@ -1,33 +1,59 @@
 names = {}
 
-def add(variable):
+init_value_type = {"int_t" : 0,
+                   "string_t" : "", 
+                   "char_t" :  "",
+                   "boolean_t" : False,
+                   "double_t" : 0.0
+                  }
+
+def add(type, variable):
     if(len(names) > 0):
         if variable not in names.keys():
-            names[variable] = 0
+            names[variable] = [type, init_value_type[type]]
         else:
-            print("! Variavel " + str(variable) + " ja existente")
+            raise Exception("(!) Variavel " + str(variable) + " ja existente")
     else:
-        names[variable] = 0
-    #print('names:' +str(names))
+            names[variable] = [type, init_value_type[type]]
+    #print('names:' + str(names))
 
 def change(variable, value):
     if(len(names) > 0):
         if variable not in names.keys():
-            print("(!) Variavel " + str(variable) + " nao existe")
+            raise Exception("(!) Variavel " + str(variable) + " nao existe")
         else:
-            names[variable] = value
+            #print(type(names[variable][1]))
+            #print(type(value))
+            if(type(names[variable][1]) == type(value)):
+                if names[variable][0] != "char_t":
+                    names[variable][1] = value
+                elif len(value) == 1:
+                    names[variable][1] = value
+                else:
+                    raise Exception("(!) Valor do tipo incompativel")
+            else:
+                raise Exception("(!) Valor do tipo incompativel")
     else:
-        print("(!) Variavel " + str(variable) + " nao existe")
+        raise Exception("(!) Variavel " + str(variable) + " nao existe")
     #print('names:' +str(names))
 
 def verify(variable):
     if(len(names) > 0):
         if variable not in names.keys():
-            print("(!) Variavel " + str(variable) + " nao existe")
+            raise Exception("(!) Variavel " + str(variable) + " nao existe")
             return None
         else:
-            return names[variable]
+            return names[variable][1]
     else:
-        print("(!) Variavel " + str(variable) + " nao existe")
+        raise Exception("(!) Variavel " + str(variable) + " nao existe")
         return None
-    
+
+def verify_for_operation(variable):
+    if(len(names) > 0):
+        if variable not in names.keys():
+            raise Exception("(!) Variavel " + str(variable) + " nao existe")
+        else:
+            return type(names[variable][1])
+    else:
+        raise Exception("(!) Variavel " + str(variable) + " nao existe")
+    #print('names:' +str(names))
