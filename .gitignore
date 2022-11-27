@@ -5,4 +5,4 @@ __pycache__
 .history
 logs
 parser.out
-parsertab.py
+parsetab.py
