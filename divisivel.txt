@@ -1,0 +1,9 @@
+source {
+    int_t numero;
+    input(numero);
+    if(numero % 5 == 0 && numero % 3 == 0) {
+        print("O numero e divisivel por 3 e 5");
+    } else {
+        print("O numero nao e divisivel");
+    }
+} sink

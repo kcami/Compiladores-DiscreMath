@@ -1,8 +1,8 @@
 names = {}
 
 init_value_type = {"int_t" : 0,
-                   "string_t" : "", 
-                   "char_t" :  "",
+                   "string_t" : '""', 
+                   "char_t" :  '""',
                    "boolean_t" : False,
                    "double_t" : 0.0
                   }
