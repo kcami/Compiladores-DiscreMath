@@ -6,7 +6,8 @@ Ytalo Ysmaicon Gomes - 2019000223s
 from ply import yacc
 from declarations import *
 import ply.lex as lex
-#import ast
+import sys
+import os
 
 # Variáveis auxiliares
 ident = '''
@@ -258,161 +259,6 @@ def p_fim_de_instrucao(p):
     '''end : PONTO_E_VIRGULA
     '''
 
-def p_valTipo(p): 
-    '''valTipo : INT
-               | STRING
-               | BOOLEAN
-               | CHAR
-               | DOUBLE
-    ''' 
-    p[0] = p[1]
-    
-def p_lista_array(p): 
-    '''lista_array : INICIA_COLCHETES array TERMINA_COLCHETES
-                   | INICIA_COLCHETES empty TERMINA_COLCHETES
-    '''
-    p[0]=f"[{p[1]}]"
-
-def p_array(p): 
-    '''array : valTipo VIRGULA array
-             | valTipo
-    '''
-    if(len(p) >= 2):
-        p[0]=f"{[p[1], p[3]]}"
-    else:
-        p[0]=f"{p[1]}"
-
-def p_matrix(p):
-    '''matrix : COMECO_DELIMITADOR_CHAVES array VIRGULA array FINAL_DELIMITADOR_CHAVES
-              | COMECO_DELIMITADOR_CHAVES array FINAL_DELIMITADOR_CHAVES
-              | COMECO_DELIMITADOR_CHAVES FINAL_DELIMITADOR_CHAVES
-    '''
-    if(len(p) >= 2):
-        p[0]=f"{p[2],p[4]}"
-    elif(len(p) == 1):
-        p[0]=f"{p[2]}"
-    else:
-        p[0]=f""
-
-def p_conjunto(t):
-    '''conjunto : VARIAVEL opConj VARIAVEL
-                | VARIAVEL opConj array
-                | array opConj VARIAVEL
-                | array opConj array
-    '''
-
-def p_relacional_options(t): 
-    '''relacional : VARIAVEL
-                  | valTipo
-    '''
-    t[0] = f"{t[1]}"
-
-def p_relacional(t): 
-    '''relacional : relacional opRel relacional
-    '''
-    try: 
-        try:
-            tmp1 = verify_for_operation(t[1])
-            vl1 = names[t[1]][1]
-        except:
-            tmp1 = type(t[1])
-            vl1 = t[1]
-        try:
-            tmp2 = verify_for_operation(t[3])
-            vl2 = names[t[3]][1]
-        except:
-            tmp2 = type(t[3])
-            vl2 = t[3]
-        if(tmp1 != tmp2):
-            raise Exception ("(!) Operacao com tipos distintos")
-        else:
-            if(type(t[1]) == str and type(t[3]) == str):
-                if(t[2] == '=='):
-                    t[0] = f"{t[1]} == {t[3]}"
-                elif(t[2] == '>='):
-                    t[0] = f"{t[1]} >= {t[3]}"
-                elif(t[2] == '<='):
-                    t[0] = f"{t[1]} <= {t[3]}"
-                elif(t[2] == '>'):
-                    t[0] = f"{t[1]} > {t[3]}"
-                elif(t[2] == '<'):
-                    t[0] = f"{t[1]} < {t[3]}"
-                elif(t[2] == '!='):
-                    t[0] = f"{t[1]} != {t[3]}"
-                else:
-                    raise Exception("(!) Operador invalido")
-            else:
-                if(t[2] == '=='):
-                    t[0] = f"{vl1} == {vl2}"
-                elif(t[2] == '>='):
-                    t[0] = f"{vl1} >= {vl2}"
-                elif(t[2] == '<='):
-                    t[0] = f"{vl1} <= {vl2}"
-                elif(t[2] == '>'):
-                    t[0] = f"{vl1} > {vl2}"
-                elif(t[2] == '<'):
-                    t[0] = f"{vl1} < {vl2}"
-                elif(t[2] == '!='):
-                    t[0] = f"{vl1} != {vl2}"
-                else:
-                    raise Exception("(!) Operador invalido")
-    except:
-        if(type(t[1]) != type(t[3])):
-                raise Exception ("(!) Operacao com tipos distintos")
-        else:
-            if(t[2] == '=='):
-                t[0] = f"{t[1]} == {t[3]}"
-            elif(t[2] == '>='):
-                t[0] = f"{t[1]} >= {t[3]}"
-            elif(t[2] == '<='):
-                t[0] = f"{t[1]} <= {t[3]}"
-            elif(t[2] == '>'):
-                t[0] = f"{t[1]} > {t[3]}"
-            elif(t[2] == '<'):
-                t[0] = f"{t[1]} < {t[3]}"
-            elif(t[2] == '!='):
-                t[0] = f"{t[1]} != {t[3]}"
-            else:
-                raise Exception("(!) Operador invalido")
-
-def p_digitos(p): 
-    '''digitos : INT 
-               | DOUBLE
-    '''
-
-def p_opRel(t):
-    '''opRel : IGUAL_IGUAL 
-             | MAIOR_OU_IGUAL
-             | MENOR_OU_IGUAL
-             | MAIOR
-             | MENOR
-             | DIFERENTE
-    '''      
-    t[0] = t[1]
-
-def p_opArit(p):
-    '''opArit : SOMA 
-              | SUBTRACAO
-              | MULTIPLICACAO
-              | DIVISAO
-              | MODULO
-    '''
-    p[0] = p[1]
-
-def p_opLog(p):
-    '''opLog : AND 
-             | OR
-             | AND_BITWISE
-             | OR_BITWISE
-    '''
-    
-def p_opConj(p):
-    '''opConj : INTERSECCAO 
-              | UNIAO
-              | DIFERENCA
-              | PRODUTO_CARTESIANO
-    '''
-
 def p_types(p):
     '''type : TIPO_INT
             | TIPO_DOUBLE
@@ -422,48 +268,26 @@ def p_types(p):
     '''
     p[0] = p[1]
 
-def p_entrada(t): 
-    '''entrada : ENTRADA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
+def p_valTipo(p): 
+    '''valTipo : INT
+               | STRING
+               | BOOLEAN
+               | CHAR
+               | DOUBLE
+    ''' 
+    p[0] = p[1]
+
+def p_digitos(p): 
+    '''digitos : INT 
+               | DOUBLE
     '''
-    t[0] = f"{t[3]} = input()"
 
-    # if(verify(t[3]) != None):
-    #     tmp = input()
-    #     try:
-    #         tmp = ast.literal_eval(tmp)
-    #     except:
-    #         pass
-    #     change(t[3], tmp)
-
-def p_saida_string(t): 
-    '''saida_string : SAIDA ABRE_PARENTESES STRING FECHA_PARENTESES
-                    | SAIDA ABRE_PARENTESES QUEBRA_LINHA FECHA_PARENTESES
-                    | SAIDA ABRE_PARENTESES CHAR FECHA_PARENTESES
+def p_main(p): 
+    '''main : INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
     '''
-    if len(t) == 5:
-        t[0] = f'print({t[3]})'
-    else:
-        t[0] = f'print("\\n")'
-
-    # tmp = t[3]
-    # if tmp != "\\n":
-    #     print(tmp.replace('"',''))
-    # else:
-    #     print('\n')
-
-def p_saida(t): 
-    '''saida_variavel : SAIDA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
-    '''
-    t[0] = f"print({t[3]})"
-     
-    # tmp = t[3]
-    # if verify(tmp) != None:
-    #     try:
-    #         print(verify(tmp).replace('"',''))
-    #     except:
-    #         print(verify(tmp))
-    # else:
-    #     raise Exception("(!) Variavel " + str(variable) + " nao existe")
+    file = open(f"{arquivo}.py", "w")
+    file.write(f"{p[3]}")
+    file.close()
 
 def p_codigo(p): 
     '''codigo   : condicional
@@ -488,20 +312,215 @@ def p_lista_codigo(p):
             p[0] = f'{p[1]}'
         else:
             p[0] = f'{p[1]}'+f'\n'+f'{p[2]}' 
-    
-def p_main(p): 
-    '''main : INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
-    '''
-    file = open(f"traducao{exemplo}.py", "w")
-    file.write(f"{p[3]}")
-    file.close()
-     
+
 def p_declaracao(p): 
     '''declaracao : type VARIAVEL
     '''
-    #add(p[1], p[2])
-    tmp = init_value_type[p[1]]
-    p[0] = f"{p[2]} = {tmp}" 
+    tmp = declare_value_type[p[1]]
+    p[0] = f"{p[2]}: {tmp}" 
+
+def p_atribuicao(p): 
+    '''atribuicao : VARIAVEL IGUAL expression
+                  | VARIAVEL IGUAL valTipo
+    '''        
+    p[0] = f"{p[1]} {p[2]} {p[3]}"
+
+def p_entrada(p): 
+    '''entrada : ENTRADA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
+    '''
+    p[0] = f"{p[3]} = type({p[3]}) (input())"
+
+def p_saida_string(p): 
+    '''saida_string : SAIDA ABRE_PARENTESES STRING FECHA_PARENTESES
+                    | SAIDA ABRE_PARENTESES QUEBRA_LINHA FECHA_PARENTESES
+                    | SAIDA ABRE_PARENTESES CHAR FECHA_PARENTESES
+    '''
+    if len(p) == 5:
+        p[0] = f'print({p[3]}, end="")'
+    else:
+        p[0] = f'print("\\n")'
+
+    #tmp = t[3]
+    #if tmp != "\\n":
+    #    print(tmp.replace('"',''))
+    #else:
+    #    print('\n')
+
+def p_saida(p): 
+    '''saida_variavel : SAIDA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
+    '''
+    p[0] = f'print({p[3]}, end="")'
+    
+    #tmp = t[3]
+    #if verify(tmp) != None:
+    #    try:
+    #        print(verify(tmp).replace('"',''))
+    #    except:
+    #        print(verify(tmp))
+    #else:
+    #    raise Exception("(!) Variavel " + str(variable) + " nao existe")
+
+def p_array(p): 
+    '''array : valTipo VIRGULA array
+             | valTipo
+    '''
+    if(len(p) >= 2):
+        p[0]=f"{[p[1], p[3]]}"
+    else:
+        p[0]=f"{p[1]}"
+
+def p_lista_array(p): 
+    '''lista_array : INICIA_COLCHETES array TERMINA_COLCHETES
+                   | INICIA_COLCHETES empty TERMINA_COLCHETES
+    '''
+    p[0]=f"[{p[1]}]"
+
+def p_matrix(p):
+    '''matrix : COMECO_DELIMITADOR_CHAVES array VIRGULA array FINAL_DELIMITADOR_CHAVES
+              | COMECO_DELIMITADOR_CHAVES array FINAL_DELIMITADOR_CHAVES
+              | COMECO_DELIMITADOR_CHAVES FINAL_DELIMITADOR_CHAVES
+    '''
+    if(len(p) >= 2):
+        p[0]=f"{p[2],p[4]}"
+    elif(len(p) == 1):
+        p[0]=f"{p[2]}"
+    else:
+        p[0]=f""
+
+def p_opRel(p):
+    '''opRel : IGUAL_IGUAL 
+             | MAIOR_OU_IGUAL
+             | MENOR_OU_IGUAL
+             | MAIOR
+             | MENOR
+             | DIFERENTE
+    '''      
+    p[0] = p[1]
+
+def p_opArit(p):
+    '''opArit : SOMA 
+              | SUBTRACAO
+              | MULTIPLICACAO
+              | DIVISAO
+              | MODULO
+    '''
+    p[0] = p[1]
+
+def p_opLog(p):
+    '''opLog : AND 
+             | OR
+             | AND_BITWISE
+             | OR_BITWISE
+    '''
+    
+def p_opConj(p):
+    '''opConj : INTERSECCAO 
+              | UNIAO
+              | DIFERENCA
+              | PRODUTO_CARTESIANO
+    '''
+
+def p_conjunto(p):
+    '''conjunto : VARIAVEL opConj VARIAVEL
+                | VARIAVEL opConj array
+                | array opConj VARIAVEL
+                | array opConj array
+    '''
+
+def p_comparacao_parenteses(p): 
+    '''comparacao : ABRE_PARENTESES comparacao FECHA_PARENTESES
+    '''
+    p[0] = f"({p[2]})"
+
+def p_comparacao_solo(t):
+    '''comparacao : relacional
+    '''
+    t[0] = t[1]
+
+def p_logico(p): 
+    '''comparacao : comparacao AND comparacao
+                  | comparacao OR comparacao
+    '''
+    if(p[2] == "&&"):
+        p[0] = f"{p[1]} and {p[3]}"
+    elif(p[2] == "||"):
+        p[0] = f"{p[1]} or {p[2]}"
+    else:
+        raise Exception("(!) Operacao invalida")
+
+def p_relacional_options(p): 
+    '''relacional : VARIAVEL
+                  | valTipo
+    '''
+    p[0] = f"{p[1]}"
+
+def p_relacional(p): 
+    '''relacional : relacional opRel relacional
+    '''
+    try: 
+        try:
+            tmp1 = verify_for_operation(p[1])
+            vl1 = names[p[1]][1]
+        except:
+            tmp1 = type(p[1])
+            vl1 = p[1]
+        try:
+            tmp2 = verify_for_operation(p[3])
+            vl2 = names[p[3]][1]
+        except:
+            tmp2 = type(p[3])
+            vl2 = p[3]
+        if(tmp1 != tmp2):
+            raise Exception ("(!) Operacao com tipos distintos")
+        else:
+            if(type(p[1]) == str and type(p[3]) == str):
+                if(p[2] == '=='):
+                    p[0] = f"{p[1]} == {p[3]}"
+                elif(p[2] == '>='):
+                    p[0] = f"{p[1]} >= {p[3]}"
+                elif(p[2] == '<='):
+                    p[0] = f"{p[1]} <= {p[3]}"
+                elif(p[2] == '>'):
+                    p[0] = f"{p[1]} > {p[3]}"
+                elif(p[2] == '<'):
+                    p[0] = f"{p[1]} < {p[3]}"
+                elif(p[2] == '!='):
+                    p[0] = f"{p[1]} != {p[3]}"
+                else:
+                    raise Exception("(!) Operador invalido")
+            else:
+                if(p[2] == '=='):
+                    p[0] = f"{vl1} == {vl2}"
+                elif(p[2] == '>='):
+                    p[0] = f"{vl1} >= {vl2}"
+                elif(p[2] == '<='):
+                    p[0] = f"{vl1} <= {vl2}"
+                elif(p[2] == '>'):
+                    p[0] = f"{vl1} > {vl2}"
+                elif(p[2] == '<'):
+                    p[0] = f"{vl1} < {vl2}"
+                elif(p[2] == '!='):
+                    p[0] = f"{vl1} != {vl2}"
+                else:
+                    raise Exception("(!) Operador invalido")
+    except:
+        if(type(p[1]) != type(p[3])):
+                raise Exception ("(!) Operacao com tipos distintos")
+        else:
+            if(p[2] == '=='):
+                p[0] = f"{p[1]} == {p[3]}"
+            elif(t[2] == '>='):
+                p[0] = f"{p[1]} >= {p[3]}"
+            elif(p[2] == '<='):
+                p[0] = f"{p[1]} <= {p[3]}"
+            elif(p[2] == '>'):
+                p[0] = f"{p[1]} > {p[3]}"
+            elif(p[2] == '<'):
+                p[0] = f"{p[1]} < {p[3]}"
+            elif(p[2] == '!='):
+                p[0] = f"{p[1]} != {p[3]}"
+            else:
+                raise Exception("(!) Operador invalido")
 
 def p_expression_parenthesis(p):
     '''expression : ABRE_PARENTESES expression FECHA_PARENTESES
@@ -535,34 +554,6 @@ def p_binary_operators(p):
     else:
         raise Exception("(!) Sinal invalido")
 
-def p_atribuicao(p): 
-    '''atribuicao : VARIAVEL IGUAL expression
-                  | VARIAVEL IGUAL valTipo
-    ''' 
-    #change(p[1], p[3])          
-    p[0] = f"{p[1]} {p[2]} {p[3]}"
-
-def p_comparacao_parenteses(p): 
-    '''comparacao : ABRE_PARENTESES comparacao FECHA_PARENTESES
-    '''
-    p[0] = f"({p[2]})"
-
-def p_logico(p): 
-    '''comparacao : comparacao AND comparacao
-                  | comparacao OR comparacao
-    '''
-    if(p[2] == "&&"):
-        p[0] = f"{p[1]} and {p[3]}"
-    elif(p[2] == "||"):
-        p[0] = f"{p[1]} or {p[2]}"
-    else:
-        raise Exception("(!) Operacao invalida")
-
-def p_comparacao_solo(t):
-    '''comparacao : relacional
-    '''
-    t[0] = t[1]
-
 def p_condicional(p): 
     '''condicional : IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
                    | IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES ELSE COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
@@ -590,9 +581,7 @@ def p_error(p):
         errossintaticos.append(p)
         print("ERRO: ",p)
 
-data = open('fatorial.txt', 'r')
-data1 = open('fibonacci.txt', 'r')
-data2 = open('divisivel.txt', 'r')
+data = open(sys.argv[1], 'r')
 
 text = ""
 for linha in data:
@@ -600,7 +589,7 @@ for linha in data:
 
 lexer = lex.lex()
 lexer.input(text)
-exemplo = 0
+arquivo, extensao = os.path.splitext(sys.argv[1])
 
 #Léxica
 fileTokens = open(f"tokens{exemplo}.txt", "w")
@@ -613,58 +602,4 @@ fileTokens.close()
 
 #Sintática
 parser = yacc.yacc(start = 'main')
-result = parser.parse(text) 
-
-text = ""
-for linha in data:
-    text += linha
-
-lexer = lex.lex()
-lexer.input(text)
-
-# Fibonacci
-
-exemplo = 1
-text = ""
-for linha in data1:
-    text += linha
-
-lexer = lex.lex()
-lexer.input(text)
-
-# Léxica
-fileTokens = open(f"tokens{exemplo}.txt", "w")
-fileTokens.write(f"( TOKEN, 'palavra/simbolo' )\n")
-for tok in lexer:
-    tok = (f"( {tok.type}, '{tok.value}' )").replace("LexToken","")
-    fileTokens.write(f"{tok}\n")
-    
-fileTokens.close()
-
-#Sintática
-parser1 = yacc.yacc(start = 'main')
-result1 = parser1.parse(text) 
-
-# Divisivel
-
-exemplo = 2
-text = ""
-for linha in data2:
-    text += linha
-
-lexer = lex.lex()
-lexer.input(text)
-
-# Léxica
-fileTokens = open(f"tokens{exemplo}.txt", "w")
-fileTokens.write(f"( TOKEN, 'palavra/simbolo' )\n")
-for tok in lexer:
-    tok = (f"( {tok.type}, '{tok.value}' )").replace("LexToken","")
-    fileTokens.write(f"{tok}\n")
-    
-fileTokens.close()
-
-#Sintática
-
-parser1 = yacc.yacc(start = 'main')
-result1 = parser1.parse(text) 
+result = parser.parse(text)

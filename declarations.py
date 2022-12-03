@@ -1,11 +1,18 @@
 names = {}
 
-init_value_type = {"int_t" : 0,
-                   "string_t" : '""', 
-                   "char_t" :  '""',
-                   "boolean_t" : False,
-                   "double_t" : 0.0
-                  }
+# init_value_type =   { "int_t" : 0,
+#                     "string_t" : '""', 
+#                     "char_t" :  '""',
+#                     "boolean_t" : False,
+#                     "double_t" : 0.0
+#                     }
+
+declare_value_type =    { "int_t" : "int = 0",
+                        "string_t" : "str = 0", 
+                        "char_t" :  "chr = 0",
+                        "boolean_t" : "bool = False",
+                        "double_t" : "float = 0.0"
+                        }
 
 # def add(type, variable):
 #     if(len(names) > 0):
@@ -22,8 +29,8 @@ init_value_type = {"int_t" : 0,
 #         if variable not in names.keys():
 #             raise Exception("(!) Variavel " + str(variable) + " nao existe")
 #         else:
-#             #print(type(names[variable][1]))
-#             #print(type(value))
+#             print(type(names[variable][1]))
+#             print(type(value))
 #             if(type(names[variable][1]) == type(value)):
 #                 if names[variable][0] != "char_t":
 #                     names[variable][1] = value
