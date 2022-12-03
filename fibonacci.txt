@@ -4,18 +4,16 @@ source {
     print("Coloque um numero para encontrar o Fibonacci");
     int_t j;
     input(j);
-
     int_t fib1;
     fib1 = 0;
     int_t fib2;
     fib2 = 1;
     int_t soma;
     soma = 0;
-
     while (i <= j) {
         soma = fib1 + fib2;
-        fib1 = fib2 * 1;
-        fib2 = soma * 1;
+        fib1 = fib2;
+        fib2 = soma;
         i = i + 1;
     }
     print(soma);

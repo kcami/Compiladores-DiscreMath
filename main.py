@@ -6,9 +6,9 @@ Ytalo Ysmaicon Gomes - 2019000223s
 from ply import yacc
 from declarations import *
 import ply.lex as lex
-import ast
+#import ast
 
-# variaveis auxiliares
+# Variáveis auxiliares
 ident = '''
     '''
 exemplo = 0
@@ -164,6 +164,11 @@ t_IGUAL = r'\='
 
 t_IGNORE = r' \t' #ignora espaço e tabulação
 
+def t_QUEBRA_LINHA(t):
+    r'"\n"'
+    t.lexer.lineno += len(t.value)
+    return t
+
 def t_STRING(t):
     r'("[^"]{2,}")'
     if t.value in reserved: #Check for reserved words
@@ -226,11 +231,6 @@ def t_simbolo_invalido(t):
     r'[@#$'']+'
     return t
 
-def t_QUEBRA_LINHA(t):
-    r'"\n"'
-    t.lexer.lineno += len(t.value)
-    return t
-
 precedence = (
     ('left','ABRE_PARENTESES','FECHA_PARENTESES'),
     ('left','AND','OR'),
@@ -249,16 +249,16 @@ def t_error(t):
 
 #Análise Sintática
 
-def p_empty(p): # Traduzido
+def p_empty(p): 
     '''empty :
     '''
     p[0] = ""
 
-def p_fim_de_instrucao(p): # Traduzido
+def p_fim_de_instrucao(p): 
     '''end : PONTO_E_VIRGULA
     '''
 
-def p_valTipo(p): # Traduzido
+def p_valTipo(p): 
     '''valTipo : INT
                | STRING
                | BOOLEAN
@@ -267,13 +267,13 @@ def p_valTipo(p): # Traduzido
     ''' 
     p[0] = p[1]
     
-def p_lista_array(p): # Traduzido
+def p_lista_array(p): 
     '''lista_array : INICIA_COLCHETES array TERMINA_COLCHETES
                    | INICIA_COLCHETES empty TERMINA_COLCHETES
     '''
     p[0]=f"[{p[1]}]"
 
-def p_array(p): # Traduzido
+def p_array(p): 
     '''array : valTipo VIRGULA array
              | valTipo
     '''
@@ -301,16 +301,15 @@ def p_conjunto(t):
                 | array opConj array
     '''
 
-def p_relacional_options(t): # Traduzido
+def p_relacional_options(t): 
     '''relacional : VARIAVEL
                   | valTipo
     '''
     t[0] = f"{t[1]}"
 
-def p_relacional(t): # Traduzido
+def p_relacional(t): 
     '''relacional : relacional opRel relacional
     '''
-
     try: 
         try:
             tmp1 = verify_for_operation(t[1])
@@ -376,7 +375,7 @@ def p_relacional(t): # Traduzido
             else:
                 raise Exception("(!) Operador invalido")
 
-def p_digitos(p): #Números que podemos fazer operações ??
+def p_digitos(p): 
     '''digitos : INT 
                | DOUBLE
     '''
@@ -423,20 +422,20 @@ def p_types(p):
     '''
     p[0] = p[1]
 
-def p_entrada(t): # Traduzido
+def p_entrada(t): 
     '''entrada : ENTRADA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
     '''
     t[0] = f"{t[3]} = input()"
 
-    if(verify(t[3]) != None):
-        tmp = input()
-        try:
-            tmp = ast.literal_eval(tmp)
-        except:
-            pass
-        change(t[3], tmp)
+    # if(verify(t[3]) != None):
+    #     tmp = input()
+    #     try:
+    #         tmp = ast.literal_eval(tmp)
+    #     except:
+    #         pass
+    #     change(t[3], tmp)
 
-def p_saida_string(t): # Traduzido
+def p_saida_string(t): 
     '''saida_string : SAIDA ABRE_PARENTESES STRING FECHA_PARENTESES
                     | SAIDA ABRE_PARENTESES QUEBRA_LINHA FECHA_PARENTESES
                     | SAIDA ABRE_PARENTESES CHAR FECHA_PARENTESES
@@ -446,27 +445,27 @@ def p_saida_string(t): # Traduzido
     else:
         t[0] = f'print("\\n")'
 
-    tmp = t[3]
-    if tmp != "\\n":
-        print(tmp.replace('"',''))
-    else:
-        print('\n')
+    # tmp = t[3]
+    # if tmp != "\\n":
+    #     print(tmp.replace('"',''))
+    # else:
+    #     print('\n')
 
-def p_saida(t): # Traduzido
+def p_saida(t): 
     '''saida_variavel : SAIDA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
     '''
     t[0] = f"print({t[3]})"
      
-    tmp = t[3]
-    if verify(tmp) != None:
-        try:
-            print(verify(tmp).replace('"',''))
-        except:
-            print(verify(tmp))
-    else:
-        raise Exception("(!) Variavel " + str(variable) + " nao existe")
+    # tmp = t[3]
+    # if verify(tmp) != None:
+    #     try:
+    #         print(verify(tmp).replace('"',''))
+    #     except:
+    #         print(verify(tmp))
+    # else:
+    #     raise Exception("(!) Variavel " + str(variable) + " nao existe")
 
-def p_codigo(p): # Traduzido
+def p_codigo(p): 
     '''codigo   : condicional
                 | atribuicao end
                 | entrada end
@@ -478,32 +477,36 @@ def p_codigo(p): # Traduzido
     '''
     p[0] = p[1]
 
-def p_lista_codigo(p): # Traduzido
+def p_lista_codigo(p): 
     '''lista_codigo : codigo lista_codigo
                     | empty
     '''
     if(len(p) == 2):
         p[0] = f''
     else:
-        p[0] = f'{p[1]}'+f'\n'+f'{p[2]}' 
+        if p[2] == "":
+            p[0] = f'{p[1]}'
+        else:
+            p[0] = f'{p[1]}'+f'\n'+f'{p[2]}' 
     
-def p_main(p): # Traduzido
+def p_main(p): 
     '''main : INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
     '''
     file = open(f"traducao{exemplo}.py", "w")
     file.write(f"{p[3]}")
     file.close()
      
-def p_declaracao(p): # Traduzido
+def p_declaracao(p): 
     '''declaracao : type VARIAVEL
     '''
-    add(p[1], p[2])
+    #add(p[1], p[2])
     tmp = init_value_type[p[1]]
     p[0] = f"{p[2]} = {tmp}" 
 
 def p_expression_parenthesis(p):
-    'expression : ABRE_PARENTESES expression FECHA_PARENTESES'
-    p[0] = p[2]
+    '''expression : ABRE_PARENTESES expression FECHA_PARENTESES
+    '''
+    p[0] = f"({p[2]})"
 
 def p_expression_uminus(p):
     '''expression : SUBTRACAO expression %prec UMINUS
@@ -514,65 +517,37 @@ def p_expressao_valor(p):
     '''expression : valTipo
                   | VARIAVEL
     '''
-    p[0] = p[1]
+    p[0] = f"{p[1]}"
 
 def p_binary_operators(p):
     '''expression : expression opArit expression %prec SOMA
     '''
-    try: 
-        try:
-            tmp1 = verify_for_operation(p[1])
-            vl1 = names[p[1]][1]
-        except:
-            tmp1 = type(p[1])
-            vl1 = p[1]
-        try:
-            tmp2 = verify_for_operation(p[3])
-            vl2 = names[p[3]][1]
-        except:
-            tmp2 = type(p[3])
-            vl2 = p[3]
-        if(tmp1 != tmp2):
-            raise Exception ("(!) Operacao com tipos distintos")
-        else:
-            if p[2] == '+':
-                p[0] = vl1 + vl2
-            elif p[2] == '-':
-                p[0] = vl1 - vl2
-            elif p[2] == '*':
-                p[0] = vl1 * vl2
-            elif p[2] == '/':
-                p[0] = vl1 / vl2
-            else:
-                raise Exception("(!) Sinal invalido")
-    except:
-        if(type(p[1]) != type(p[3])):
-                raise Exception ("(!) Operacao com tipos distintos")
-        else:
-            if p[2] == '+':
-                p[0] = p[1] + p[3]
-            elif p[2] == '-':
-                p[0] = p[1] - p[3]
-            elif p[2] == '*':
-                p[0] = p[1] * p[3]
-            elif p[2] == '/':
-                p[0] = p[1] / p[3]
-            else:
-                raise Exception("(!) Sinal invalido")
+    if p[2] == '+':
+        p[0] = f"{p[1]} + {p[3]}"
+    elif p[2] == '-':
+        p[0] = f"{p[1]} - {p[3]}"
+    elif p[2] == '*':
+        p[0] = f"{p[1]} * {p[3]}"
+    elif p[2] == '/':
+        p[0] = f"{p[1]} / {p[3]}"
+    elif p[2] == '%':
+        p[0] = f"{p[1]} % {p[3]}"
+    else:
+        raise Exception("(!) Sinal invalido")
 
-def p_atribuicao(p): # Traduzido
+def p_atribuicao(p): 
     '''atribuicao : VARIAVEL IGUAL expression
                   | VARIAVEL IGUAL valTipo
-    '''           
-    change(p[1], p[3])
+    ''' 
+    #change(p[1], p[3])          
     p[0] = f"{p[1]} {p[2]} {p[3]}"
 
-def p_comparacao_parenteses(p): # Traduzido
+def p_comparacao_parenteses(p): 
     '''comparacao : ABRE_PARENTESES comparacao FECHA_PARENTESES
     '''
     p[0] = f"({p[2]})"
 
-def p_logico(p): # Traduzido
+def p_logico(p): 
     '''comparacao : comparacao AND comparacao
                   | comparacao OR comparacao
     '''
@@ -588,20 +563,20 @@ def p_comparacao_solo(t):
     '''
     t[0] = t[1]
 
-def p_condicional(p): # Traduzido
+def p_condicional(p): 
     '''condicional : IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
                    | IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES ELSE COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
     '''
- 
+
     tmp1 = p[6].replace("\n", ident)
     tmp2 = p[10].replace("\n", ident)
 
     if(len(p) == 8):
         p[0] = f'''if {p[3]}:{ident}{tmp1}'''
     else:
-        p[0] = f'''if {p[3]}:{ident}{tmp1}\nelse:{ident}{tmp2}''' # string completa
+        p[0] = f'''if {p[3]}:{ident}{tmp1}\nelse:{ident}{tmp2}''' 
 
-def p_while(p): # Traduzido
+def p_while(p): 
     '''while : WHILE ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
     '''
     
@@ -615,11 +590,9 @@ def p_error(p):
         errossintaticos.append(p)
         print("ERRO: ",p)
 
-data = open('entrada.txt', 'r')
+data = open('fatorial.txt', 'r')
 data1 = open('fibonacci.txt', 'r')
 data2 = open('divisivel.txt', 'r')
-
-#\\n é o quebra linha pq o primeiro \ é pra dizer que o próximo \ tem q ser considera hahHAHAhahaha
 
 text = ""
 for linha in data:

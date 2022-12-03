@@ -1,0 +1,18 @@
+source {
+    int_t n;
+    print("Digite o valor de n: ");
+    input(n);
+    int_t fat;
+    fat = 1;
+    int_t i;
+    i = 2;
+    while (i <= n) {
+        fat = fat * i;
+        i = i + 1;
+    }
+    print("O valor de ");
+    print(n);
+    print("! = ");
+    print(fat);
+    print("\n");
+} sink
