@@ -1,17 +1,21 @@
 names = {}
 
-# init_value_type =   { "int_t" : 0,
+# init_value_type =   { 
+#                     "int_t" : 0,
 #                     "string_t" : '""', 
 #                     "char_t" :  '""',
 #                     "boolean_t" : False,
 #                     "double_t" : 0.0
 #                     }
 
-declare_value_type =    { "int_t" : "int = 0",
+declare_value_type =    { 
+                        "int_t" : "int = 0",
                         "string_t" : "str = 0", 
                         "char_t" :  "chr = 0",
                         "boolean_t" : "bool = False",
-                        "double_t" : "float = 0.0"
+                        "double_t" : "float = 0.0",
+                        "array_t" : "any = []",
+                        "matrix_t" : "any = [[]]"
                         }
 
 # def add(type, variable):

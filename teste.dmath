@@ -1,0 +1,17 @@
+source {
+    int_t a;
+    a = 5;
+    array_t A;
+    A = [1,2];
+    array_t B;
+    B = [3,4];
+    A  = A uni B;
+    print(A);
+    print("\n");
+    A = B inter A;
+    print(A);
+    print("\n");
+    matrix_t X;
+    X = {A, B, [5,6]};
+    print(X);
+} sink

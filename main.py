@@ -12,7 +12,6 @@ import os
 # Variáveis auxiliares
 ident = '''
     '''
-exemplo = 0
 
 # Palavras reservadas do compilador
 reserved = {
@@ -193,25 +192,21 @@ def t_BOOLEAN(t):
     if t.value == "True":
         t.value = bool(True)
     else:
-        t.value = bool(False)
-    
+        t.value = bool(False)  
     return t
 
 def t_DOUBLE(t):
     r'[+-]?(\d*\.\d*)|(\d+\.\d*)'
-    t.value = float(t.value)
-    
+    t.value = float(t.value)  
     return t
 
 def t_INT(t):
     r'[+-]?\d+'
     max = (len(t.value))
-    if (max > 15):
-        
+    if (max > 15):       
         t.value = 0
     else:
         t.value = int(t.value)
-        
     return t
 
 def t_CHAR(t):
@@ -265,6 +260,8 @@ def p_types(p):
             | TIPO_STRING
             | TIPO_CHAR
             | TIPO_BOOLEAN
+            | TIPO_ARRAY
+            | TIPO_MATRIX
     '''
     p[0] = p[1]
 
@@ -322,6 +319,9 @@ def p_declaracao(p):
 def p_atribuicao(p): 
     '''atribuicao : VARIAVEL IGUAL expression
                   | VARIAVEL IGUAL valTipo
+                  | VARIAVEL IGUAL lista_array
+                  | VARIAVEL IGUAL lista_matrix
+                  | VARIAVEL IGUAL conjunto
     '''        
     p[0] = f"{p[1]} {p[2]} {p[3]}"
 
@@ -340,52 +340,52 @@ def p_saida_string(p):
     else:
         p[0] = f'print("\\n")'
 
-    #tmp = t[3]
-    #if tmp != "\\n":
-    #    print(tmp.replace('"',''))
-    #else:
-    #    print('\n')
-
 def p_saida(p): 
     '''saida_variavel : SAIDA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
     '''
     p[0] = f'print({p[3]}, end="")'
-    
-    #tmp = t[3]
-    #if verify(tmp) != None:
-    #    try:
-    #        print(verify(tmp).replace('"',''))
-    #    except:
-    #        print(verify(tmp))
-    #else:
-    #    raise Exception("(!) Variavel " + str(variable) + " nao existe")
+
+def p_array_options(p): 
+    '''array_options : VARIAVEL
+                     | valTipo
+    '''
+    p[0] = f"{p[1]}"
 
 def p_array(p): 
-    '''array : valTipo VIRGULA array
-             | valTipo
+    '''array : array_options VIRGULA array
+             | array_options
     '''
-    if(len(p) >= 2):
-        p[0]=f"{[p[1], p[3]]}"
+    if(len(p) > 2):
+        p[0] = f"{p[1]}, {p[3]}"
     else:
-        p[0]=f"{p[1]}"
+        p[0] = f"{p[1]}"
 
 def p_lista_array(p): 
     '''lista_array : INICIA_COLCHETES array TERMINA_COLCHETES
                    | INICIA_COLCHETES empty TERMINA_COLCHETES
     '''
-    p[0]=f"[{p[1]}]"
+    p[0] = f"[{p[2]}]"
+
+def p_matrix_options(p):
+    '''matrix_options : lista_array
+                      | VARIAVEL
+    '''
+    p[0] = f"{p[1]}"
 
 def p_matrix(p):
-    '''matrix : COMECO_DELIMITADOR_CHAVES array VIRGULA array FINAL_DELIMITADOR_CHAVES
-              | COMECO_DELIMITADOR_CHAVES array FINAL_DELIMITADOR_CHAVES
-              | COMECO_DELIMITADOR_CHAVES FINAL_DELIMITADOR_CHAVES
+    '''matrix : matrix_options VIRGULA matrix
+              | matrix_options
     '''
-    if(len(p) >= 2):
-        p[0]=f"{p[2],p[4]}"
-    elif(len(p) == 1):
-        p[0]=f"{p[2]}"
+    if(len(p) > 2):
+        p[0] = f"{p[1]}, {p[3]}"
     else:
-        p[0]=f""
+        p[0] = f"{p[1]}"
+
+def p_lista_matrix(p):
+    '''lista_matrix : COMECO_DELIMITADOR_CHAVES matrix FINAL_DELIMITADOR_CHAVES
+                    | COMECO_DELIMITADOR_CHAVES empty FINAL_DELIMITADOR_CHAVES
+    '''
+    p[0] = f"[{p[2]}]"
 
 def p_opRel(p):
     '''opRel : IGUAL_IGUAL 
@@ -412,6 +412,7 @@ def p_opLog(p):
              | AND_BITWISE
              | OR_BITWISE
     '''
+    p[0] = p[1]
     
 def p_opConj(p):
     '''opConj : INTERSECCAO 
@@ -419,13 +420,28 @@ def p_opConj(p):
               | DIFERENCA
               | PRODUTO_CARTESIANO
     '''
+    p[0] = p[1]
+
+def p_conj_options(p):
+    '''conj_options : VARIAVEL
+                    | lista_array
+    '''
+    p[0] = f"{p[1]}"
 
 def p_conjunto(p):
-    '''conjunto : VARIAVEL opConj VARIAVEL
-                | VARIAVEL opConj array
-                | array opConj VARIAVEL
-                | array opConj array
+    '''conjunto : conj_options opConj conj_options
     '''
+    if p[2] == 'dif':
+        p[0] = f"list(set({p[1]}).difference(set({p[3]})))"
+    elif p[2] == 'inter':
+        p[0] = f"list(set({p[1]}).intersection(set({p[3]})))"
+    elif p[2] == 'uni':
+        p[0] = f"list(set({p[1]}).union(set({p[3]})))"
+    elif p[2] == 'carte':
+        p[0] = f"[(a, b) for a in {p[1]} for b in {p[3]}]"
+    else:
+        raise Exception("(!) Operacao invalida")  
+
 
 def p_comparacao_parenteses(p): 
     '''comparacao : ABRE_PARENTESES comparacao FECHA_PARENTESES
@@ -592,7 +608,7 @@ lexer.input(text)
 arquivo, extensao = os.path.splitext(sys.argv[1])
 
 #Léxica
-fileTokens = open(f"tokens{exemplo}.txt", "w")
+fileTokens = open(f"tokens_{arquivo}.txt", "w")
 fileTokens.write(f"( TOKEN, 'palavra/simbolo' )\n")
 for tok in lexer:
     tok = (f"( {tok.type}, '{tok.value}' )").replace("LexToken","")
