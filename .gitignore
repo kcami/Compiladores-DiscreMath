@@ -6,9 +6,4 @@ __pycache__
 logs
 parser.out
 parsetab.py
-tokens0.txt
-tokens1.txt
-tokens2.txt
-traducao0.py
-traducao1.py
-traducao2.py
+*tokens*
