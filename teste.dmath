@@ -22,6 +22,7 @@ source {
     A = A carte B;
     print(A);
     print("\n");
+    print("\n");
     A = B inter A;
     print(A);
     print("\n");
@@ -31,9 +32,13 @@ source {
     print("\n");
     print("\n");
 
+    $ Testando produto cartesiano, selecao e projecao $
     matrix_t people;
     matrix_t bike;
     matrix_t cross;
+    array_t sele;
+    array_t proje;
+    array_t proje1;
     people = {["Lindsay", 16, "female"],
         ["Tom", 21, "male"],
         ["Eric", 33, "male"],
@@ -55,5 +60,11 @@ source {
         ["Brad", "pink"]
         };
     cross = people carte bike;
+    sele = cross sel 0;
+    proje = sele proj "Tom";
     print(cross);
+    print("\n");
+    print(sele);
+    print("\n");
+    print(proje);
 } sink

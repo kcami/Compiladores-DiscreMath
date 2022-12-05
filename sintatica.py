@@ -99,6 +99,8 @@ def p_atribuicao(p):
                   | VARIAVEL IGUAL lista_array
                   | VARIAVEL IGUAL lista_matrix
                   | VARIAVEL IGUAL conjunto
+                  | VARIAVEL IGUAL selecao
+                  | VARIAVEL IGUAL projecao
     '''        
     if(verify_for_operation(p[1])):
         p[0] = f"{p[1]} {p[2]} {p[3]}"
@@ -212,14 +214,39 @@ def p_opConj(p):
     '''
     p[0] = p[1]
 
-def p_conj_options(p):
-    '''conj_options : VARIAVEL
-                    | lista_array
+def p_selecao_options(p):
+    '''selecao_options : matrix
+    '''
+    p[0] = f"{p[1]}"
+
+def p_selecao(p):
+    '''selecao : selecao_options SELECAO INT
+    '''
+    p[0] = f"[a[{p[3]}] for a in {p[1]}]"
+
+def p_projecao_options(p):
+    '''projecao_options : matrix
+                        | array
+    '''
+    p[0] = f"{p[1]}"
+
+def p_projecao_selecao(p):
+    '''projecao : projecao_options PROJECAO valTipo
+                | projecao_options PROJECAO INT IGUAL_IGUAL valTipo
+    '''
+    if(len(p) == 4):
+        p[0] = f"[a for a in {p[1]} if a == {p[3]}]"
+    else:
+        p[0] = f"[a for a in {p[1]} if a[{p[3]}] == {p[5]}]"
+
+def p_conjunto_options(p):
+    '''conjunto_options : matrix
+                        | array
     '''
     p[0] = f"{p[1]}"
 
 def p_conjunto(p):
-    '''conjunto : conj_options opConj conj_options
+    '''conjunto : conjunto_options opConj conjunto_options
     '''
     if p[2] == 'dif':
         p[0] = f"list(set({p[1]}).difference(set({p[3]})))"
@@ -228,12 +255,11 @@ def p_conjunto(p):
     elif p[2] == 'uni':
         p[0] = f"list(set({p[1]}).union(set({p[3]})))"
     elif p[2] == 'carte':
-        p[0] = f"[(a, b) for a in {p[1]} for b in {p[3]}]"
+        p[0] = f"sorted(set(map(tuple, [(a+b) for a in {p[1]} for b in {p[3]}])))"
     else:
         with open(f"erros_{arquivo}.txt", "w") as file1:
             file1.write(f"(!) Operacao invalida\n")
-        raise Exception("(!) Operacao invalida")  
-
+        raise Exception("(!) Operacao invalida") 
 
 def p_comparacao_parenteses(p): 
     '''comparacao : ABRE_PARENTESES comparacao FECHA_PARENTESES
@@ -392,11 +418,12 @@ def p_condicional(p):
                    | IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES ELSE COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
     '''
 
+    tmp1 = p[6].replace("\n", ident)
+    tmp2 = p[10].replace("\n", ident)
+
     if(len(p) == 8):
-        tmp1 = p[6].replace("\n", ident)
         p[0] = f'''if {p[3]}:{ident}{tmp1}'''
     else:
-        tmp2 = p[10].replace("\n", ident)
         p[0] = f'''if {p[3]}:{ident}{tmp1}\nelse:{ident}{tmp2}''' 
 
 def p_while(p): 
