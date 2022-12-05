@@ -1,4 +1,4 @@
-names = {}
+names = []
 
 # init_value_type =   { 
 #                     "int_t" : 0,
@@ -27,6 +27,16 @@ declare_value_type =    {
 #     else:
 #             names[variable] = [type, init_value_type[type]]
 #     #print('names:' + str(names))
+
+def add_variable(variable):
+    if(len(names) > 0):
+        if variable not in names:
+            names.append(variable)
+        else:
+            raise Exception("(!) Variavel " + str(variable) + " ja existente")
+    else:
+            names.append(variable)
+    #print('names:' + str(names))
 
 # def change(variable, value):
 #     if(len(names) > 0):
@@ -61,10 +71,10 @@ declare_value_type =    {
 
 def verify_for_operation(variable):
     if(len(names) > 0):
-        if variable not in names.keys():
-            raise Exception("(!) Variavel " + str(variable) + " nao existe")
+        if variable not in names:
+            return False
         else:
-            return type(names[variable][1])
+            return True
     else:
-        raise Exception("(!) Variavel " + str(variable) + " nao existe")
+        return False
     #print('names:' +str(names))

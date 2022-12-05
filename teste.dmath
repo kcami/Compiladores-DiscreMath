@@ -2,10 +2,11 @@ source {
     int_t a;
     a = 5;
     array_t A;
+    array_t N;
     A = [1,2];
     array_t B;
-    B = [3,4];
-    A  = A uni B;
+    B = [2,3];
+    C  = A uni B;
     print(A);
     print("\n");
     A = B inter A;
@@ -14,4 +15,5 @@ source {
     matrix_t X;
     X = {A, B, [5,6]};
     print(X);
+    print("\n");
 } sink
