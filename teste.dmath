@@ -1,12 +1,25 @@
 source {
+    int_t unario1; 
+    unario1 = 2;
+    boolean_t unario2;
+    unario2 = False;
+    int_t unario3;
+    unario3 = 3;
+    
+    print(!unario1);
+    print(!unario2);
+    print(~unario3); 
+    print(5 + 3);
+    print("\n");
+
     int_t a;
-    a = 5;
+    $ Oi Thaty, como está você? Gostamos muito de você s2 $
     array_t A;
     array_t N;
     A = [1,2];
     array_t B;
     B = [2,3];
-    C  = A uni B;
+    A = A carte B;
     print(A);
     print("\n");
     A = B inter A;
@@ -16,4 +29,31 @@ source {
     X = {A, B, [5,6]};
     print(X);
     print("\n");
+    print("\n");
+
+    matrix_t people;
+    matrix_t bike;
+    matrix_t cross;
+    people = {["Lindsay", 16, "female"],
+        ["Tom", 21, "male"],
+        ["Eric", 33, "male"],
+        ["Marco", 13, "male"],
+        ["Kristopher", 45, "male"],
+        ["Kelly", 21,    "female"],
+        ["Mitchell", 24, "male"],
+        ["Tammy", 30, "female"],
+        ["Brad", 18, "male "]
+        };
+    bike = {["Lindsay", "orange"],
+        ["Tom", "black"],
+        ["Eric", "green"],
+        ["Marco", "orange"],
+        ["Kristopher", "grey"],
+        ["Kelly", "blue"],
+        ["Mitchell", "red"],
+        ["Tammy", "yellow"],
+        ["Brad", "pink"]
+        };
+    cross = people carte bike;
+    print(cross);
 } sink

@@ -1,7 +1,7 @@
 '''
 Camila Motta Reno - 2019003833
 Stefany Coura Coimbra - 2019008562
-Ytalo Ysmaicon Gomes - 2019000223s
+Ytalo Ysmaicon Gomes - 2019000223
 '''
 import ply.lex as lex
 import sys
@@ -22,6 +22,8 @@ reserved = {
    'sel' : 'SELECAO',
    'proj' : 'PROJECAO',
    'carte' : 'PRODUTO_CARTESIANO',
+   'ponens' : 'MODUS_PONENS',
+   'tolens' : 'MODUS_TOLENS',
    'input' : 'ENTRADA',
    'print' : 'SAIDA',
    'int_t' : 'TIPO_INT',
@@ -95,8 +97,7 @@ tokens = [
    'IGNORE',      #Ignorar tabulação e espaço
 
                                                       #Comentários
-   'COMENTARIO_LINHA',                              
-   'COMENTARIO_BLOCO',
+   'COMENTARIO_LINHA',  
 
    'numero_mf',   #numero mal formado
    'string_mf',   #string mal formada
@@ -117,6 +118,8 @@ t_DIFERENCA             = r'dif'
 t_SELECAO               = r'sel'
 t_PROJECAO              = r'proj'
 t_PRODUTO_CARTESIANO    = r'carte'
+t_MODUS_PONENS          = r'ponens'
+t_MODUS_TOLENS          = r'tolens'
 t_ENTRADA               = r'input'
 t_SAIDA                 = r'print'
 t_TIPO_INT              = r'int_t'
@@ -163,13 +166,9 @@ t_IGUAL = r'\='
 t_IGNORE = r' \t' #ignora espaço e tabulação
 
 def t_COMENTARIO_LINHA(t):
-     r'\$'
+     r'\$.*\$'
      return(t)
-
-def t_COMENTARIO_BLOCO(t):
-     r'\$\$'
-     return(t)
-
+     
 def t_QUEBRA_LINHA(t):
     r'"\n"'
     t.lexer.lineno += len(t.value)
@@ -190,7 +189,7 @@ def t_numero_mf(t):
     return t 
 
 def t_variavel_mf(t):
-    r'([0-9]+[a-z]+)|([@!#$%&*]+[a-z]+|[a-z]+\.[0-9]+|[a-z]+[@!#$%&*]+)'
+    r'([0-9]+[a-z]+)|([@#%&*]+[a-z]+|[a-z]+\.[0-9]+|[a-z]+[@#%&*]+)'
     return t
 
 def t_BOOLEAN(t):

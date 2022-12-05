@@ -1,7 +1,7 @@
 '''
 Camila Motta Reno - 2019003833
 Stefany Coura Coimbra - 2019008562
-Ytalo Ysmaicon Gomes - 2019000223s
+Ytalo Ysmaicon Gomes - 2019000223
 '''
 from ply import yacc
 from declarations import *
@@ -65,7 +65,6 @@ def p_codigo(p):
                 | conjunto end
                 | while
                 | comentario
-                | lista_comentario
     '''
     p[0] = p[1]
 
@@ -82,14 +81,10 @@ def p_lista_codigo(p):
             p[0] = f'{p[1]}'+f'\n'+f'{p[2]}' 
 
 def p_comentario(p):
-    '''comentario : COMENTARIO_LINHA STRING COMENTARIO_LINHA
+    '''comentario : COMENTARIO_LINHA
     '''
-    p[0] = f"# {p[2]}"
-
-def p_lista_comentario(p):
-    '''lista_comentario : COMENTARIO_BLOCO STRING COMENTARIO_BLOCO
-    '''
-    p[0] = f"'''{p[2]} {ident}'''"
+    aux = p[1].replace("$", '')
+    p[0] = f"#{aux}"
 
 def p_declaracao(p): 
     '''declaracao : type VARIAVEL
@@ -128,7 +123,9 @@ def p_saida_string(p):
         p[0] = f'print("\\n")'
 
 def p_saida(p): 
-    '''saida_variavel : SAIDA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES
+    '''saida_variavel : SAIDA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES    
+                      | SAIDA ABRE_PARENTESES comparacao FECHA_PARENTESES 
+                      | SAIDA ABRE_PARENTESES expression FECHA_PARENTESES 
     '''
     p[0] = f'print({p[3]}, end="")'
 
@@ -200,6 +197,12 @@ def p_opLog(p):
              | OR_BITWISE
     '''
     p[0] = p[1]
+
+def p_opUna(p):
+    '''opUna : TILNOT_BITWISE 
+             | NOT
+    '''
+    p[0] = p[1]
     
 def p_opConj(p):
     '''opConj : INTERSECCAO 
@@ -239,6 +242,7 @@ def p_comparacao_parenteses(p):
 
 def p_comparacao_solo(t):
     '''comparacao : relacional
+                  | unario
     '''
     t[0] = t[1]
 
@@ -254,6 +258,16 @@ def p_logico(p):
         with open(f"erros_{arquivo}.txt", "w") as file1:
             file1.write(f"(!) Operacao invalida\n")
         raise Exception("(!) Operacao invalida")
+
+def p_unario(p):
+    '''unario : opUna VARIAVEL
+              | opUna INT
+              | opUna BOOLEAN
+    '''
+    if(p[1] == '!'):
+        p[0] = f"not {p[2]}"
+    elif(p[1] == '~'):
+        p[0] = f"~ {p[2]}"
 
 def p_relacional_options(p): 
     '''relacional : VARIAVEL
@@ -324,7 +338,7 @@ def p_relacional(p):
         else:
             if(p[2] == '=='):
                 p[0] = f"{p[1]} == {p[3]}"
-            elif(t[2] == '>='):
+            elif(p[2] == '>='):
                 p[0] = f"{p[1]} >= {p[3]}"
             elif(p[2] == '<='):
                 p[0] = f"{p[1]} <= {p[3]}"
@@ -378,12 +392,11 @@ def p_condicional(p):
                    | IF ABRE_PARENTESES comparacao FECHA_PARENTESES COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES ELSE COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES
     '''
 
-    tmp1 = p[6].replace("\n", ident)
-    tmp2 = p[10].replace("\n", ident)
-
     if(len(p) == 8):
+        tmp1 = p[6].replace("\n", ident)
         p[0] = f'''if {p[3]}:{ident}{tmp1}'''
     else:
+        tmp2 = p[10].replace("\n", ident)
         p[0] = f'''if {p[3]}:{ident}{tmp1}\nelse:{ident}{tmp2}''' 
 
 def p_while(p): 
@@ -393,6 +406,10 @@ def p_while(p):
     tmp = p[6].replace("\n", ident)
 
     p[0] = f'''while {p[3]}:{ident}{tmp}'''
+
+#def p_ponens(p): # precisa fazer a premissa antes 
+    '''ponens : MODUS_PONENS ABRE_PARENTESES  FECHA_PARENTESES
+    '''
 
 errossintaticos = []
 def p_error(p):
