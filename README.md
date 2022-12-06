@@ -37,7 +37,7 @@ auto-py-to-exe
 ```
 - Irá abrir uma interface gráfica, você deve escolher o caminho do arquivo `discremath.py` e pedir para convertê-lo em `.exe`
 
-<img src="[https://img.icons8.com/external-tal-revivo-duo-tal-revivo/30/000000/external-monochrome-laser-printer-for-fast-printing-solution-basic-duo-tal-revivo.png](https://uploadnow.io/f/7grZzyF)"/>
+<img src="https://uploadnow.io/files/7grZzyF"/>
 
 - Será gerado o `.exe` dentro da pasta output criada pelo programa. Basta copiar o arquivo para a pasta onde estará seus programas `.dmath`
 
