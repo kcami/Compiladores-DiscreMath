@@ -27,28 +27,28 @@ pip install -r requirements.txt
 Clone este repositório e, para utilizar a linguagem, por favor escreva os programas com extensão `.dmath` na mesma pasta em que estiver o arquivo discremath.exe, que é o executável do compilador.
 
 Caso possua uma versão diferente do Python daquela mencionada:
-**Rode o comando para instalar o auto-py-to-exe
+- Rode o comando para instalar o auto-py-to-exe
 ```bash
 pip install auto-py-to-exe
 ```
-**No terminal, execute o comando
+- No terminal, execute o comando
 ```bash
 auto-py-to-exe
 ```
-**Irá abrir uma interface gráfica, você deve escolher o caminho do arquivo `discremath.py` e pedir para convertê-lo em `.exe`
+- Irá abrir uma interface gráfica, você deve escolher o caminho do arquivo `discremath.py` e pedir para convertê-lo em `.exe`
 <a href=""><img src="https://uploadnow.io/files/7grZzyF"></a>
 
-**Será gerado o `.exe` dentro da pasta output criada pelo programa. Basta copiar o arquivo para a pasta onde estará seus programas `.dmath`
+- Será gerado o `.exe` dentro da pasta output criada pelo programa. Basta copiar o arquivo para a pasta onde estará seus programas `.dmath`
 
 ## Execução
 
-**Primeira maneira:
-Para rodar um programa escreto na linguagem DiscreMath você pode usar diretamente:
+- Primeira maneira:
+Para rodar um programa escrito na linguagem DiscreMath você pode usar diretamente:
 ```bash
 discremath {nome_programa}.dmath
 ```
 
-**Segunda maneira:
+- Segunda maneira:
 Se houver problemas com o compilador `.exe`, você pode compilar os seus programas `.dmath` assim:
 ```bash
 python sintatica.py {nome_programa}.dmath
