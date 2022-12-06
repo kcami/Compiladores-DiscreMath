@@ -2,7 +2,7 @@
 
 Construção de um analisador léxico e sintático utilizando Python Lex-Yacc (PLY) para segunda nota da disciplina de Compiladores (ECOM06) da Universidade Federal de Itajubá (UNIFEI).
 
-## <img src="https://icons8.com.br/icon/64568/livro-de-matem%C3%A1tica.png"/> O que é DiscreMath?
+## <img src="https://img.icons8.com/clouds/512/math-book.png"/> O que é DiscreMath?
 
 É uma linguagem de programação voltada para operações de matemática discreta e álgebra relacional, como seleção e projeção, oferecendo também suporte para operações de conjuntos, como união, interseção e diferença.
 
