@@ -15,7 +15,7 @@ python --version
 ```
 
 Use o gerenciador de pacotes [pip](https://pip.pypa.io/en/stable/) para instalar os requisitos.
-- Ply 3.11
+- Biblioteca Ply 3.11
 - Biblioteca numpy 1.22.3
 - Biblioteca pandas 1.4.2
 ```bash
