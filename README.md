@@ -2,11 +2,11 @@
 
 Construção de um analisador léxico e sintático utilizando Python Lex-Yacc (PLY) para segunda nota da disciplina de Compiladores (ECOM06) da Universidade Federal de Itajubá (UNIFEI).
 
-## O que é DiscreMath?
+## <img src="https://icons8.com.br/icon/64568/livro-de-matem%C3%A1tica"/> O que é DiscreMath?
 
 É uma linguagem de programação voltada para operações de matemática discreta e álgebra relacional, como seleção e projeção, oferecendo também suporte para operações de conjuntos, como união, interseção e diferença.
 
-## Requisitos Mínimos e Instalação
+## <img src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/30/000000/external-archery-sport-wanicon-lineal-color-wanicon.png"/> Requisitos Mínimos e Instalação
 
 Nossa linguagem foi criada e testada utilizando:
  - Python 3.10 (verifique a versão no prompt de comando).
@@ -22,7 +22,7 @@ Use o gerenciador de pacotes [pip](https://pip.pypa.io/en/stable/) para instalar
 pip install -r requirements.txt
 ```
 
-## Utilização
+## <img src="https://img.icons8.com/color/30/000000/run-command.png"/> Utilização
 
 Clone este repositório e, para utilizar a linguagem, por favor escreva os programas com extensão `.dmath` na mesma pasta em que estiver o arquivo `discremath.exe`, que é o executável do compilador.
 
@@ -39,7 +39,7 @@ auto-py-to-exe
 - 
 - Será gerado o `.exe` dentro da pasta output criada pelo programa. Basta copiar o arquivo para a pasta onde estará seus programas `.dmath`
 
-## Execução
+## <img src="https://img.icons8.com/cotton/30/000000/file-arrow.png"/> Execução
 
 - Primeira maneira:
 Para rodar um programa escrito na linguagem DiscreMath você pode usar diretamente:
