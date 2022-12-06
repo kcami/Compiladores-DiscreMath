@@ -7,8 +7,7 @@ import ply.lex as lex
 import sys
 import os
 
-import warnings
-warnings.filterwarnings("ignore")
+import logging
 
 # Palavras reservadas do compilador
 reserved = {

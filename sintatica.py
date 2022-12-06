@@ -45,11 +45,6 @@ def p_valTipo(p):
     ''' 
     p[0] = p[1]
 
-def p_digitos(p): 
-    '''digitos : INT 
-               | DOUBLE
-    '''
-
 def p_main(p): 
     '''main : INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
     '''
@@ -208,14 +203,6 @@ def p_opArit(p):
               | MULTIPLICACAO
               | DIVISAO
               | MODULO
-    '''
-    p[0] = p[1]
-
-def p_opLog(p):
-    '''opLog : AND 
-             | OR
-             | AND_BITWISE
-             | OR_BITWISE
     '''
     p[0] = p[1]
 
@@ -467,5 +454,5 @@ def p_error(p):
         errossintaticos.append(p)
         print("ERRO: ",p)
 
-parser = yacc.yacc(start = 'main')
+parser = yacc.yacc(errorlog=yacc.NullLogger(),start = 'main')
 result = parser.parse(text)
