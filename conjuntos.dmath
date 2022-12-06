@@ -1,0 +1,37 @@
+source {
+    $ Objetivo: trabalhar com operações de conjuntos nos arrays a1 e a2 e nas matrizes m1 e m2 $
+    array_t uniao;
+    matrix_t diferenca;
+    matrix_t intersecao;
+    array_t a1;
+    array_t a2;
+    a1 = [1,2,3];
+    a2 = [3,5,6];
+
+    matrix_t m1;
+    matrix_t m2;
+    m1 = {["Camila",21],["Stefany",22],["Ytalo",22],
+          ["Alice",22], ["João",21], ["Zeus", 600]
+        };
+    m2 = {["Camila",21],["Stefany",22],["Ytalo",22],
+          ["Viviane",24], ["João",21], ["Atenas", 500]
+        };
+
+    print("União:");
+    print("\n");
+    uniao = a1 uni a2;
+    print(uniao);
+
+    print("\n");
+    print("Diferença:");
+    print("\n");
+    diferenca = m1 dif m2;
+    print(diferenca);
+
+    print("\n");
+    print("Intersecção:");
+    print("\n");
+    intersecao = m1 inter m2;
+    print(intersecao);
+
+} sink
