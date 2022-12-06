@@ -60,6 +60,74 @@ Após compilar e rodar seu programa, será gerado o arquivo `tokens_{nome_progra
 
 Um arquivo `erros_{nome_programa}.txt` será gerado dentro da pasta erros. Ele deve estar vazio, caso a compilação seja feita com sucesso.
 
+## Lista de Comandos
+
+- Declaração
+```bash
+int_t varint;
+double_t vardouble;
+char_t varchar;
+string_t varstring;
+boolean_t varboolean;
+array_t vararray;
+matrix_t varmatrix;
+```
+
+- Atribuição
+```bash
+varint = 7;
+vardouble = 10.27;
+varchar = 'a';
+varstring = "hello world";
+varboolean = False;
+vararray = [2,3,4];
+varmatrix = {[1,2,3],[4,5,6],[7,8,9]};
+```
+
+- Operações aritméticas: `+`, `-`, `*`, `%`, `/`
+- Comparações com: `>`, `>=`, `<`, `<=`, `==`, `!=` 
+- Operador lógico `!` e bitwise `~`
+- Seleção e projeção
+```bash
+{nome_varmatrix_1} = {nome_varmatrix_2} sel ({string_a_ser_encontrada_na_linha}; {string_da_coluna_onde_quer_verificar_valor_da_linha});
+{nome_varmatrix_1} = {nome_varmatrix_2} proj ({lista_string_colunas_a_serem_projetadas});
+```
+- Condicional simples
+```bash
+if ({comparacoes}) {
+  {lista_comandos}
+}
+```
+- Condicional simples com else
+```bash
+if ({comparacoes}) {
+  {lista_comandos_if}
+}
+else {
+  {lista_comandos_else}
+}
+```
+- Condicional encadeado
+```bash
+if ({comparacoes_if_1}) {
+  {lista_comandos_if_1}
+}
+else {
+  if ({comparacoes_if_2}) {
+    {lista_comandos_if_2}
+  }
+  else {
+    {lista_comandos_else_2}
+  }
+}
+```
+- Laço de repetição
+```bash
+while ({comparacao}) {
+  {lista_comandos_while}
+}
+```
+
 ## <img src="https://img.icons8.com/external-kiranshastry-lineal-color-kiranshastry/30/000000/external-developer-coding-kiranshastry-lineal-color-kiranshastry-1.png"/> Time
 * Camila Motta Renó (<img src="https://img.icons8.com/ios-glyphs/30/000000/github.png"/> https://github.com/kcami)
 * Stéfany Coura Coimbra (<img src="https://img.icons8.com/ios-glyphs/30/000000/github.png"/> https://github.com/stefanycoimbra)
