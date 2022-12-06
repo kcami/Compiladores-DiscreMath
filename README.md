@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 ## Utilização
 
-Clone este repositório e, para utilizar a linguagem, por favor escreva os programas com extensão `.dmath` na mesma pasta em que estiver o arquivo discremath.exe, que é o executável do compilador.
+Clone este repositório e, para utilizar a linguagem, por favor escreva os programas com extensão `.dmath` na mesma pasta em que estiver o arquivo `discremath.exe`, que é o executável do compilador.
 
 Caso possua uma versão diferente do Python daquela mencionada:
 - Rode o comando para instalar o auto-py-to-exe
@@ -36,7 +36,8 @@ pip install auto-py-to-exe
 auto-py-to-exe
 ```
 - Irá abrir uma interface gráfica, você deve escolher o caminho do arquivo `discremath.py` e pedir para convertê-lo em `.exe`
-<a href=""><img src="https://uploadnow.io/files/7grZzyF"></a>
+
+<img src="[https://img.icons8.com/external-tal-revivo-duo-tal-revivo/30/000000/external-monochrome-laser-printer-for-fast-printing-solution-basic-duo-tal-revivo.png](https://uploadnow.io/f/7grZzyF)"/>
 
 - Será gerado o `.exe` dentro da pasta output criada pelo programa. Basta copiar o arquivo para a pasta onde estará seus programas `.dmath`
 
