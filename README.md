@@ -56,8 +56,9 @@ python sintatica.py {nome_programa}.dmath
 python {nome_programa}.py
 ```
 
-Após compilar e rodar seu programa, será gerado o arquivo `tokens_{nome_programa}.txt` dentro da pasta tokens.
-Um arquivo `erros_{nome_programa}.txt` será dentro da pasta erros. Ele deve estar vazio, caso a compilação seja feita com sucesso.
+Após compilar e rodar seu programa, será gerado o arquivo `tokens_{nome_programa}.txt` dentro da pasta tokens contendo todos os tokens do programa.
+
+Um arquivo `erros_{nome_programa}.txt` será gerado dentro da pasta erros. Ele deve estar vazio, caso a compilação seja feita com sucesso.
 
 ## <img src="https://img.icons8.com/external-kiranshastry-lineal-color-kiranshastry/30/000000/external-developer-coding-kiranshastry-lineal-color-kiranshastry-1.png"/> Time
 * Camila Motta Renó (<img src="https://img.icons8.com/ios-glyphs/30/000000/github.png"/> https://github.com/kcami)
