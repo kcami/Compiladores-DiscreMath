@@ -11,7 +11,7 @@ if extensao != ".dmath":
 
 call("python " + "sintatica.py " + f"{arquivo}{extensao}", shell=True)
 
-isempty = os.stat(f"erros_{arquivo}.txt").st_size == 0
+isempty = os.stat(f"./erros/erros_{arquivo}.txt").st_size == 0
 
 if(isempty):
     call("python " + f"{arquivo}.py", shell=True)

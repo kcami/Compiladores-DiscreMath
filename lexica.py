@@ -7,6 +7,9 @@ import ply.lex as lex
 import sys
 import os
 
+import warnings
+warnings.filterwarnings("ignore")
+
 # Palavras reservadas do compilador
 reserved = {
    'source' : 'INICIO',
@@ -256,14 +259,18 @@ text = ""
 for linha in data:
     text += linha
 
-lexer = lex.lex()
+lexer = lex.lex(errorlog=lex.NullLogger())
 lexer.input(text)
 
 #Geração de tokens
-fileTokens = open(f"tokens_{arquivo}.txt", "w")
-fileTokens.write(f"( TOKEN, 'palavra/simbolo' )\n")
-for tok in lexer:
-    tok = (f"( {tok.type}, '{tok.value}' )").replace("LexToken","")
-    fileTokens.write(f"{tok}\n")
-    
-fileTokens.close()
+with open(f"./tokens/tokens_{arquivo}.txt", "w") as fileTokens, open(f"./erros/erros_{arquivo}.txt", "w") as file1:
+        fileTokens.write(f"( TOKEN, 'palavra/simbolo' )\n")
+        for tok in lexer:
+            tok = (f"( {tok.type}, '{tok.value}' )").replace("LexToken","")
+            fileTokens.write(f"{tok}\n")
+        fileTokens.close()
+        file1.write(f"( TOKEN, 'palavra/simbolo' )\n")
+        for tok in lexer:
+            tok = (f"( {tok.type}, '{tok.value}' )").replace("LexToken","")
+            file1.write(f"{tok}\n")
+        file1.close()

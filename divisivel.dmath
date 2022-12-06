@@ -1,4 +1,5 @@
 source {
+    $ Objetivo: testar se número é divisível por 3 e/ou por 5 $
     int_t numero;
     print("Digite um numero:");
     input(numero);

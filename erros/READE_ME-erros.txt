@@ -1,0 +1,2 @@
+Esta pasta contém todos os arquivos de erros gerados pelo compilador em relação aos programas.
+Caso o arquivo "erros_{nome_programa}.txt" estiver vazio, não houve erros ao compilá-lo.

@@ -1,0 +1,43 @@
+source {
+    $ Objetivo: trabalhar com banco de dados de pessoas que possuem bike $
+    matrix_t people;
+    matrix_t bike;
+    matrix_t cross;
+    matrix_t sele;
+    matrix_t proje;
+    people = {["Lindsay", 16, "female"],
+        ["Tom", 21, "male"],
+        ["Eric", 33, "male"],
+        ["Marco", 13, "male"],
+        ["Kristopher", 45, "male"],
+        ["Kelly", 21,    "female"],
+        ["Mitchell", 24, "male"],
+        ["Tammy", 30, "female"],
+        ["Brad", 18, "male "]
+        };
+    bike = {["Lindsay", "orange"],
+        ["Tom", "black"],
+        ["Eric", "green"],
+        ["Marco", "orange"],
+        ["Kristopher", "grey"],
+        ["Kelly", "blue"],
+        ["Mitchell", "red"],
+        ["Tammy", "yellow"],
+        ["Brad", "pink"]
+        };
+    cross = people carte bike;
+    print("Produto Cartesiano:");
+    print("\n");
+    print(cross);
+    print("\n");
+    sele = cross sel ("Lindsay"; "0_x");
+    proje = sele proj ("0_x", "1_y");
+    print("Seleção:");
+    print("\n");
+    print(sele);
+    print("\n");
+    print("Projeção:");
+    print("\n");
+    print(proje);
+    print("\n");
+} sink

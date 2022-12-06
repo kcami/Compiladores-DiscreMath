@@ -1,4 +1,6 @@
 source {
+    $ Objetivo: fazer fatorial de um número $
+    $ Lembrando: fatorial -> num! $
     int_t n;
     print("Digite o valor de n: ");
     input(n);

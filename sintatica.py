@@ -7,6 +7,9 @@ from ply import yacc
 from declarations import *
 from lexica import *
 
+import numpy as np
+import pandas as pd
+
 # Variáveis auxiliares
 ident = '''
     '''
@@ -50,7 +53,11 @@ def p_digitos(p):
 def p_main(p): 
     '''main : INICIO COMECO_DELIMITADOR_CHAVES lista_codigo FINAL_DELIMITADOR_CHAVES FIM
     '''
-    with open(f"{arquivo}.py", "w") as file0, open(f"erros_{arquivo}.txt", "w") as file1:
+    with open(f"{arquivo}.py", "w") as file0, open(f"./erros/erros_{arquivo}.txt", "w") as file1:
+        file0.write(f"import numpy as np\n")
+        file0.write(f"import pandas as pd\n\n")
+        file0.write(f"pd.set_option('display.max_rows', None)\n")
+        file0.write(f"pd.set_option('display.max_columns', None)\n\n")
         file0.write(f"{p[3]}")
         file1.write(f"")
     file0.close()
@@ -119,10 +126,7 @@ def p_saida_string(p):
                     | SAIDA ABRE_PARENTESES QUEBRA_LINHA FECHA_PARENTESES
                     | SAIDA ABRE_PARENTESES CHAR FECHA_PARENTESES
     '''
-    if len(p) == 5:
-        p[0] = f'print({p[3]}, end="")'
-    else:
-        p[0] = f'print("\\n")'
+    p[0] = f'print({p[3]}, end="")'
 
 def p_saida(p): 
     '''saida_variavel : SAIDA ABRE_PARENTESES VARIAVEL FECHA_PARENTESES    
@@ -150,10 +154,25 @@ def p_lista_array(p):
     '''lista_array : INICIA_COLCHETES array TERMINA_COLCHETES
                    | INICIA_COLCHETES empty TERMINA_COLCHETES
     '''
+    p[0] = f"pd.DataFrame([{p[2]}])"
+
+def p_array_matrix(p): 
+    '''array_matrix : array_options VIRGULA array_matrix
+                    | array_options
+    '''
+    if(len(p) > 2):
+        p[0] = f"{p[1]}, {p[3]}"
+    else:
+        p[0] = f"{p[1]}"
+
+def p_lista_array_matrix(p): 
+    '''lista_array_matrix : INICIA_COLCHETES array_matrix TERMINA_COLCHETES
+                          | INICIA_COLCHETES empty TERMINA_COLCHETES
+    '''
     p[0] = f"[{p[2]}]"
 
 def p_matrix_options(p):
-    '''matrix_options : lista_array
+    '''matrix_options : lista_array_matrix
                       | VARIAVEL
     '''
     p[0] = f"{p[1]}"
@@ -171,7 +190,7 @@ def p_lista_matrix(p):
     '''lista_matrix : COMECO_DELIMITADOR_CHAVES matrix FINAL_DELIMITADOR_CHAVES
                     | COMECO_DELIMITADOR_CHAVES empty FINAL_DELIMITADOR_CHAVES
     '''
-    p[0] = f"[{p[2]}]"
+    p[0] = f"pd.DataFrame([{p[2]}])"
 
 def p_opRel(p):
     '''opRel : IGUAL_IGUAL 
@@ -215,29 +234,33 @@ def p_opConj(p):
     p[0] = p[1]
 
 def p_selecao_options(p):
-    '''selecao_options : matrix
+    '''selecao_options : STRING VIRGULA selecao_options
+                       | STRING
     '''
-    p[0] = f"{p[1]}"
+    if(len(p) > 2):
+        p[0] = f"{p[1]}, {p[3]}"
+    else:
+        p[0] = f"{p[1]}"
 
 def p_selecao(p):
-    '''selecao : selecao_options SELECAO INT
+    '''selecao : matrix SELECAO ABRE_PARENTESES selecao_options PONTO_E_VIRGULA selecao_options FECHA_PARENTESES
     '''
-    p[0] = f"[a[{p[3]}] for a in {p[1]}]"
+    p[0] = f"{p[1]}.loc[{p[1]}[{p[6]}].isin([{p[4]}])]"
 
 def p_projecao_options(p):
-    '''projecao_options : matrix
-                        | array
+    '''projecao_options : STRING VIRGULA projecao_options
+                        | STRING
     '''
-    p[0] = f"{p[1]}"
-
-def p_projecao_selecao(p):
-    '''projecao : projecao_options PROJECAO valTipo
-                | projecao_options PROJECAO INT IGUAL_IGUAL valTipo
-    '''
-    if(len(p) == 4):
-        p[0] = f"[a for a in {p[1]} if a == {p[3]}]"
+    if(len(p) > 2):
+        p[0] = f"[{p[1]}, {p[3]}]"
     else:
-        p[0] = f"[a for a in {p[1]} if a[{p[3]}] == {p[5]}]"
+        p[0] = f"{p[1]}"
+
+def p_projecao(p):
+    '''projecao : matrix PROJECAO ABRE_PARENTESES projecao_options FECHA_PARENTESES
+                | selecao PROJECAO ABRE_PARENTESES projecao_options FECHA_PARENTESES
+    '''
+    p[0] = f"{p[1]}[{p[4]}]"
 
 def p_conjunto_options(p):
     '''conjunto_options : matrix
@@ -249,13 +272,13 @@ def p_conjunto(p):
     '''conjunto : conjunto_options opConj conjunto_options
     '''
     if p[2] == 'dif':
-        p[0] = f"list(set({p[1]}).difference(set({p[3]})))"
+        p[0] = f"pd.DataFrame(list(set([elem[0] for elem in {p[1]}.to_numpy()]).difference(set([elem[0] for elem in {p[3]}.to_numpy()]))))"
     elif p[2] == 'inter':
-        p[0] = f"list(set({p[1]}).intersection(set({p[3]})))"
+        p[0] = f"pd.DataFrame(list(set([elem[0] for elem in {p[1]}.to_numpy()]).intersection(set([elem[0] for elem in {p[3]}.to_numpy()]))))"
     elif p[2] == 'uni':
-        p[0] = f"list(set({p[1]}).union(set({p[3]})))"
+        p[0] = f"pd.DataFrame(list(set([elem[0] for elem in {p[1]}.to_numpy()]).union(set([elem[0] for elem in {p[3]}.to_numpy()]))))"
     elif p[2] == 'carte':
-        p[0] = f"sorted(set(map(tuple, [(a+b) for a in {p[1]} for b in {p[3]}])))"
+        p[0] = f"pd.merge({p[1]},{p[3]}, how='cross')"
     else:
         with open(f"erros_{arquivo}.txt", "w") as file1:
             file1.write(f"(!) Operacao invalida\n")

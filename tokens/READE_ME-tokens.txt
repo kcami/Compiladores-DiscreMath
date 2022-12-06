@@ -1,0 +1,2 @@
+Esta pasta contém todos os arquivos com os tokens gerados pelo compilador em relação aos programas.
+Cada arquivo "tokens_{nome_programa}.txt" possui os tokens do {nome_programa}.dmath.

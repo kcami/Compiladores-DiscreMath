@@ -1,4 +1,5 @@
 source {
+    $ Objetivo: fazer fibonacci de um número $
     int_t i;
     i = 2;
     print("Coloque um numero para encontrar o Fibonacci: ");
@@ -17,5 +18,8 @@ source {
         fib2 = soma;
         i = i + 1;
     }
+    print("O ");
+    print(j);
+    print("-ésimo número da sequência fibonacci é = ");
     print(soma);
 } sink
